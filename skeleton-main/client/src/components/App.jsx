@@ -1,26 +1,22 @@
 import React, { useState, useEffect, createContext } from "react";
 import { Outlet } from "react-router-dom";
-
 import jwt_decode from "jwt-decode";
 
 import "../utilities.css";
 
 import { socket } from "../client-socket";
-
 import { get, post } from "../utilities";
+
+import NavBar from "./modules/NavBar";
 
 export const UserContext = createContext(null);
 
-/**
- * Define the "App" component
- */
 const App = () => {
   const [userId, setUserId] = useState(undefined);
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
       if (user._id) {
-        // they are registed in the database, and currently logged in.
         setUserId(user._id);
       }
     });
@@ -49,6 +45,7 @@ const App = () => {
 
   return (
     <UserContext.Provider value={authContextValue}>
+      <NavBar />
       <Outlet />
     </UserContext.Provider>
   );

@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App";
-import Skeleton from "./components/pages/Skeleton";
+import Account from "./components/pages/Account";
+import Feed from "./components/pages/Feed";
+import Create from "./components/pages/Create";
 import NotFound from "./components/pages/NotFound";
 
 import {
@@ -9,24 +11,25 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider
-} from 'react-router-dom'
+} from "react-router-dom";
 
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
-//TODO: REPLACE WITH YOUR OWN CLIENT_ID
-const GOOGLE_CLIENT_ID = "FILL ME IN";
+const GOOGLE_CLIENT_ID = "621419868174-h7g79nu7thn73qppsc64319u59v3fk1j.apps.googleusercontent.com";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route errorElement={<NotFound />} element={<App />}>
-      <Route path="/" element={<Skeleton />}/>
+      <Route path="/" element={<Feed />} />
+      <Route path="/account" element={<Account />} />
+      <Route path="/create" element={<Create />} />
     </Route>
   )
-)
+);
 
-// renders React Component "Root" into the DOM element with ID "root"
 ReactDOM.createRoot(document.getElementById("root")).render(
   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <RouterProvider router={router} />
   </GoogleOAuthProvider>
 );
+
