@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
+
+ul {
+    list-style-type: none; /* Removes bullets */
+    display: flex; /* Horizontally aligns the items */
+    padding: 0;
+    margin: 0;
+    justify-content: flex-end; /*moves to left */
+    align-items: center; /*vertical center*/
+    flex-wrap: wrap; /* Allows wrapping to the next line */
+  }
+
+li, a {
+    margin: 10px 20px; /* Adds spacing between items */
+    font-family: "Raleway", sans-serif;
+    color: white;
+    font-size: 25px;
+    text-decoration: none;
+  }
+
+img {
+    width: 200px; /* Adjust width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.create {
+    font-family: "Aboreto", sans-serif;
+    background-image: url(../imgs/NavBarBackground.png);
+    margin-top: 23px;
+    margin-bottom: 0px;
+}
+
+@media (max-width: 700px) {
+  ul {
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+      flex-direction: column; /* Optional: Stack items vertically */
+  }
+}

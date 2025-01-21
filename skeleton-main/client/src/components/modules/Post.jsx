@@ -1,9 +1,11 @@
-import FractalImage from "./FractalImage"
+import React from "react";
+import "../pages/Feed.css"; // Ensure the styles are applied
+
 const Post = () => {
     return (
-        <div>
+        <div className="Post">
             <p>This is the post</p>
-            <FractalImage></FractalImage>
+            <div className="FractalImage"></div> {/* Placeholder for the image */}
             <p>username</p>
             <div>Account Logo</div>
             <p>caption</p>
@@ -11,6 +13,6 @@ const Post = () => {
             <div>heart</div>
         </div>
     );
-}
+};
 
 export default Post;
