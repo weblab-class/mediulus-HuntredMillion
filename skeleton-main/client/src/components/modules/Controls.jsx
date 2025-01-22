@@ -10,94 +10,93 @@ import {
   Slider,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import TreeModule from "./TreeModule";
+import TreeModuleParallel from "./TreeModuleParallel";
 
 const Controls = ({
   drawMode,
   setDrawMode,
   numIters,
   setNumIters,
-  treeModules,
-  setTreeModules,
-  onTreeModuleUpdate,
+  treeModuleParallels,
+  setTMPs,
+  onTMPUpdate,
+  setLines,
 }) => {
-  const handleDrawModeChange = (event, newMode) => {
-    if (newMode !== null) {
-      setDrawMode(newMode);
-    }
+  const handleDrawModeChange = (event) => {
+    setDrawMode(event.target.value);
   };
 
-  const handleAddTreeModule = () => {
-    setTreeModules([
-      ...treeModules,
+  const handleAddTMP = () => {
+    const defaultTreeModule = {
+      id: Date.now(),
+      numLines: 2,
+      angle: 45,
+      decay: 0.5,
+    };
+    setTMPs([
+      ...treeModuleParallels,
       {
         id: Date.now(),
-        numLines: 2,
-        angle: 45,
-        decay: 0.5,
+        numIters: 1,
+        treeModules: [defaultTreeModule],
       },
     ]);
   };
 
-  const handleDeleteTreeModule = (id) => {
-    setTreeModules(treeModules.filter((module) => module.id !== id));
+  const handleDeleteTMP = (id) => {
+    setTMPs(treeModuleParallels.filter((branch) => branch.id !== id));
+    setLines((prevLines) => ({
+      ...prevLines,
+      branches: Object.fromEntries(
+        Object.entries(prevLines.branches).filter(([branchId]) => branchId !== id.toString())
+      ),
+    }));
   };
 
   return (
     <Paper elevation={3} className="controls-container">
       <div className="controls-section">
-        <Typography className="controls-heading">Global Settings</Typography>
-        <div className="controls-section">
-          <Typography className="controls-subheading">Number of Iterations</Typography>
-          <Slider
-            className="controls-slider"
-            value={numIters}
-            onChange={(e, newValue) => setNumIters(newValue)}
-            min={0}
-            max={10}
-            step={1}
-            marks
-            valueLabelDisplay="auto"
-          />
+        <div className="controls-radio-group">
+          <span className="controls-radio-label">Start With:</span>
+          <label className="controls-radio-option">
+            <input
+              type="radio"
+              value="line"
+              checked={drawMode === "line"}
+              onChange={handleDrawModeChange}
+              name="drawMode"
+            />
+            <span>Line</span>
+          </label>
+          <label className="controls-radio-option">
+            <input
+              type="radio"
+              value="point"
+              checked={drawMode === "point"}
+              onChange={handleDrawModeChange}
+              name="drawMode"
+            />
+            <span>Point</span>
+          </label>
         </div>
-
-        <Typography className="controls-heading">Drawing Mode</Typography>
-        <ToggleButtonGroup
-          value={drawMode}
-          exclusive
-          onChange={handleDrawModeChange}
-          aria-label="drawing mode"
-          className="controls-toggle-group"
-        >
-          <ToggleButton value="line" aria-label="line mode" className="controls-toggle-button">
-            <TimelineIcon />
-            <Typography className="controls-toggle-text">Line</Typography>
-          </ToggleButton>
-          <ToggleButton value="point" aria-label="point mode" className="controls-toggle-button">
-            <RadioButtonUncheckedIcon />
-            <Typography className="controls-toggle-text">Point</Typography>
-          </ToggleButton>
-        </ToggleButtonGroup>
       </div>
 
       <Divider className="controls-divider" />
 
       <div className="controls-module-header">
-        <Typography>Tree Modules: {treeModules.length}</Typography>
-        <IconButton onClick={handleAddTreeModule} className="controls-add-button">
+        <Typography>Branches: {treeModuleParallels.length}</Typography>
+        <IconButton onClick={handleAddTMP} className="controls-add-button">
           <AddIcon />
         </IconButton>
       </div>
 
       <div className="controls-module-list">
-        {treeModules.map((module) => (
-          <TreeModule
+        {treeModuleParallels.map((module) => (
+          <TreeModuleParallel
             key={module.id}
             id={module.id}
-            onDelete={handleDeleteTreeModule}
-            onUpdate={onTreeModuleUpdate}
+            onDelete={handleDeleteTMP}
+            onUpdate={onTMPUpdate}
             initialValues={module}
           />
         ))}

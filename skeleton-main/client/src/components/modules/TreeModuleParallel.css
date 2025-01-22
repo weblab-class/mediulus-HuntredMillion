@@ -1,0 +1,73 @@
+.tree-module {
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.tree-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tree-module-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.tree-module-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tree-module-close {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.tree-module-close:hover {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.expand-button {
+  color: rgba(0, 0, 0, 0.54);
+  transition: transform 0.3s ease;
+}
+
+.expand-button.expanded {
+  transform: rotate(90deg);
+}
+
+.tree-module-controls {
+  margin-bottom: 16px;
+}
+
+.tree-module-control {
+  width: 100%;
+}
+
+.tree-module-label {
+  margin-bottom: 8px;
+}
+
+.tree-module-slider {
+  width: 100%;
+}
+
+.tree-module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.tree-module-add {
+  align-self: flex-end;
+  color: #1976d2 !important;
+}
+
+.tree-module-add:hover {
+  background-color: rgba(25, 118, 210, 0.04) !important;
+}

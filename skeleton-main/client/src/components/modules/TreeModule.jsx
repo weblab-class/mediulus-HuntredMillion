@@ -15,14 +15,17 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
 
   const handleNumLines = (event, newValue) => {
     setNumLines(newValue);
-    const maxAngle = 360 / newValue;
-    if (angle > maxAngle) {
-      setAngle(Math.round(maxAngle / 2));
-    }
+    // const maxAngle = 360 / newValue;
+    // if (angle > maxAngle) {
+    //   setAngle(Math.round(maxAngle / 2));
+    // }
   };
 
   const handleAngle = (event, newValue) => {
     setAngle(newValue);
+    if (newValue === 360) {
+      // console.log("#1 angle is 360");
+    }
   };
 
   const handleDecay = (event, newValue) => {
@@ -60,7 +63,7 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
             value={angle}
             onChange={handleAngle}
             min={0}
-            max={360 / numLines}
+            max={360}
             step={1}
             valueLabelDisplay="auto"
           />

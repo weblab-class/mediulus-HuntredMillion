@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./Display.css";
 import { Paper, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import HomeIcon from "@mui/icons-material/Home";
 
-function Display({ lines }) {
+const Display = ({ lines, drawMode, startPoint }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -65,6 +65,13 @@ function Display({ lines }) {
     ctx.translate(centerX, centerY);
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom * scale, zoom * scale);
+
+    if (drawMode === "point" && startPoint) {
+      ctx.beginPath();
+      ctx.arc(startPoint.x, startPoint.y, 3, 0, 2 * Math.PI);
+      ctx.fillStyle = "black";
+      ctx.fill();
+    }
 
     // Draw lines
     ctx.lineWidth = 1 / zoom;
@@ -134,6 +141,6 @@ function Display({ lines }) {
       </div>
     </Paper>
   );
-}
+};
 
 export default Display;
