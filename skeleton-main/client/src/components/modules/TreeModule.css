@@ -1,0 +1,47 @@
+.tree-module {
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.tree-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tree-module-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.tree-module-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.tree-module-close:hover {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.tree-module-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tree-module-control {
+  width: 100%;
+}
+
+.tree-module-label {
+  margin-bottom: 8px;
+}
+
+.tree-module-slider {
+  width: 100%;
+}
