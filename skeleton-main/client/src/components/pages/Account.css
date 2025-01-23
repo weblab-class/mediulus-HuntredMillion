@@ -1,0 +1,90 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
+.Profile {
+    margin: 10px 25px;
+
+}
+.Account {
+    font-family: 'Raleway';
+    color:white;
+}
+.TopSection {
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: center;
+}
+.UserNameAndEdit {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+.Settings, .UserBio {
+    border: 1px solid white;
+}
+
+.Settings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 25px;
+    height: 275px;
+}
+.UserBio {
+    width: 700px;
+
+}
+.Settings button {
+    border:none;
+
+}
+
+.PictureContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 50px;
+}
+.ProfilePic {
+    border: 1px solid white;
+    height: 275px;
+    width:275px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.UserBio {
+    margin-left: 25px;
+    padding:10px;
+    height: 255px;
+
+}
+
+.UserNameAndEdit p {
+    font-family: 'Major Mono Display', monospace;
+    text-transform: uppercase;
+}
+.UserNameAndEdit button {
+    font-size: 15px;
+}
+@media (max-width: 700px) {
+    .TopSection {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .UserBio {
+        width:300px
+    }
+
+    .PictureContainer, .Settings, .UserBio {
+        margin: 10px 0;
+    }
+}

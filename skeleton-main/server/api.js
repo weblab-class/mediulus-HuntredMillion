@@ -11,6 +11,8 @@ const express = require("express");
 
 // import models so we can interact with the database
 const User = require("./models/user");
+const Comment = require("./models/comment")
+const Fractal = require("./models/fractal")
 
 // import authentication library
 const auth = require("./auth");
@@ -42,6 +44,17 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 // | write your API methods below!|
 // |------------------------------|
+router.get('/user', function(req, res) {
+  User.findOne({ _id: req.query._id }, function(err, user) {
+    res.send(user);
+  });
+});
+
+router.get("/posts", (req, res) => {
+  // empty selector means get all documents
+  Fractal.find({}).then((fractals) => res.send(fractals));
+});
+
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {

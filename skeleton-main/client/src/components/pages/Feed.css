@@ -1,31 +1,44 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
 
-button {
-    display: flex;
-    height: 50px;
-    padding: 10px 20px;
-    justify-content: center;
+.body {
+    width:100%;
+    display: flex; /* Enables Flexbox */
+    background: transparent;
+      
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center; /* Center content vertically */
     align-items: center;
-    flex-shrink: 0;
-    border-radius: 34778px;
-    border: 1.043px solid #37ABFF;
-    backdrop-filter: blur(1.7389342784881592px);
-    background-color: transparent;
-    margin: 5px 20px;
-    color:white;
-    font-family: "Raleway", sans-serif;
-    text-align: center;
-    font-size: 17px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 94%; /* 22.56px */
-    text-transform: uppercase;
+    /* ^^ unsure abt this */
+    min-height: 100vh; /* Full viewport height */  
+    padding: 0 20px; /* Add horizontal padding */
 }
 
 .Buttons, .CustomDisplay {
     display: flex; /* Horizontally aligns the items */
     margin:5px;
     flex-wrap: wrap; /* Allows wrapping to the next line */
+}
+
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 50px;
+    padding: 10px 20px;
+    margin: 5px 20px;
+
+    border: 1.043px solid #37ABFF;
+    border-radius: 34778px;
+    
+    backdrop-filter: blur(1.7389342784881592px);
+    background-color: transparent;
+
+    color:white;
+    font-family: "Raleway", sans-serif;
+    text-align: center;
+    font-size: 17px;
+    text-transform: uppercase;
 }
 
 .CustomDisplay {
@@ -36,14 +49,48 @@ button {
     position: relative;
 }
 
+p {
+    margin: 0px 10px;
+}
+
+.Container {
+    width: 100%;
+    max-width: 120rem;
+    margin: auto;
+    padding: 0 1.5rem;
+}
+
+.PostsGallery {
+    display: grid; /* Grid layout for posts */
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-gap: 1.5rem;
+}
+
+.Buttons {
+    display: flex; /* Flex container for buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap if needed */
+    justify-content: flex-start; /* Align buttons to the left */
+    align-items: center; /* Center buttons vertically within the container */
+    gap: 10px; /* Space between buttons */
+    margin-left: 0; /* Ensure no unintended margin on the left */
+    width: 100%; /* Make the Buttons container span the full width */
+}
+
+/*interactive*/
+button:hover {
+    background-color: #37ABFF;
+    color: #1e1e1e; /* Invert colors on hover */
+}
+
 .CustomDisplay.visible {
     opacity: 1;
     transform: translateY(0);
     visibility: visible;
 }
 
-p {
-    margin: 0px 10px;
+p:hover {
+    color: white
 }
 
 @media (max-width: 700px) {
@@ -51,47 +98,12 @@ p {
         justify-content: center; /* Center horizontally */
         align-items: center; /* Center vertically */
         flex-direction: column; /* Optional: Stack items vertically */
-    }
+        }
 
     .DisplayButton {
         margin-top: 10px;
     }
+
+    
 }
 
-p:hover, .CustomFeed:hover {
-    color: palevioletred; /* Color when hovered */
-}
-
-.Post {
-    width: 150px; /* Adjust width */
-    height: 150px; /* Adjust height */
-    background-color: #f0f0f0; /* Background color for the post */
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center content horizontally */
-    justify-content: center; /* Center content vertically */
-    border-radius: 10px; /* Add rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-    overflow: hidden; /* Crop any overflowing content */
-    margin: 10px; /* Space between posts */
-}
-
-.Post p {
-    margin: 5px 0; /* Adjust spacing for text */
-    font-size: 12px; /* Adjust font size */
-    text-align: center; /* Center align text */
-}
-
-.Post div {
-    margin: 5px 0; /* Adjust spacing for div elements */
-    font-size: 12px;
-    text-align: center;
-}
-
-.FractalImage {
-    width: 100px; /* Adjust width of the image */
-    height: 100px; /* Adjust height of the image */
-    background-color: #ccc; /* Placeholder background */
-    border-radius: 5px; /* Optional rounded corners for the image */
-    margin: 5px 0; /* Space between the image and other elements */
-}

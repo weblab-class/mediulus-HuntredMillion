@@ -1,8 +1,55 @@
 import React, { useState } from "react";
 import "./Feed.css";
-import Post from '../modules/Post.jsx';
+import Post from "../modules/Post.jsx";
+import { get } from "../../utilities";
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
-const Feed = () => {
+const Feed = (props) => {
+    /*This is the info for the content of the page*/
+    const [posts, setPosts] = useState([]);
+
+    // called when the "Feed" component "mounts", i.e.
+    // when it shows up on screen
+    useEffect(() => {
+        document.title = "Post Feed";
+        get("/api/posts").then((postObjs) => {
+          let reversedpostObjs = postObjs.reverse();
+          setPosts(reversedpostObjs);
+        });
+    }, []);
+
+    let postsList = null;
+    const hasPosts = posts.length !== 0;
+    if (hasPosts) {
+    postsList = posts.map((postObj) => (
+
+      <Post
+        key={`Card_${postObj._id}`}
+        _id={postObj._id}
+        fractal_id = {postObj.fractal_id}
+        creator_id={postObj.creator_id}
+        img_url = {postObj.img_url}
+        likes = {postObj.likes}
+        userId={props.userId}
+        description={postObj.description}
+      />
+    
+    ));
+    } else {
+        postsList = <div>No Post!</div>;
+    }
+
+    let postsListEven = [];
+    let postsListOdd = [];
+    for (let postObj of postsList) {
+        if (parseInt(postObj._id) % 2 === 0) {
+            postsListEven.push(postObj);
+        } else {
+            postsListOdd.push(postObj)
+        }
+    }
+
+    /*This is the info for the button*/
     const [showCustomDisplay, setShowCustomDisplay] = useState(false);
 
     const toggleCustomDisplay = () => {
@@ -13,8 +60,9 @@ const Feed = () => {
         setShowCustomDisplay(false);
     };
 
+
     return (
-        <>
+        <div className="Container">
             <div className="Buttons">
                 <button 
                     className="CustomFeed" 
@@ -22,39 +70,28 @@ const Feed = () => {
                 >
                     Customize Feed
                 </button>
-
-                {/* Add dynamic class based on showCustomDisplay */}
                 <div 
                     className={`CustomDisplay ${showCustomDisplay ? "visible" : ""}`}
                 >
-                    <svg
-                        width="48"
-                        height="48"
-                        viewBox="0 0 48 48"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <RemoveCircleOutlineIcon 
                         onClick={hideCustomDisplay}
-                        style={{ cursor: "pointer" }}
-                    >
-                        <g id="Minus circle">
-                            <path
-                                id="Icon"
-                                d="M16 24H32M44 24C44 35.0457 35.0457 44 24 44C12.9543 44 4 35.0457 4 24C4 12.9543 12.9543 4 24 4C35.0457 4 44 12.9543 44 24Z"
-                                stroke="white"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </g>
-                    </svg>
+                        style={{ cursor: "pointer" }}/>
                     <button className="DisplayButton">
                         <p onClick={hideCustomDisplay}>Trending</p>
                         <p onClick={hideCustomDisplay}>Following</p>
                     </button>
                 </div>
             </div>
-            <Post/>
-            <Post/>
-        </>
+
+            <div className="postGallery">
+                <div className="postGallery1">
+                    {postsListEven}
+                </div>
+                <div clasName = "postGallery2">
+                    {postsListOdd}
+                </div>
+            </div>
+        </div>
     );
 };
 

@@ -1,12 +1,21 @@
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import './Comment/css'
 
-const Comment = () => {
+/**
+ * 
+ * @param {String} key
+ * @param {String} creator_id
+ * @param {String} fractal_id
+ * @param {String} content
+ */
+const Comments = (props) => {
     return (
-        <div>
-            <p>commenter</p>
-            <div>Account Logo</div>
-            <p>comment</p>
+        <div className="CommentContainer">
+            <p>{props.creator_id}</p>
+            <PersonOutlineIcon/>
+            <p>{props.content}</p>
         </div>
     );
 }
 
-export default Comment;
+export default Comments;
