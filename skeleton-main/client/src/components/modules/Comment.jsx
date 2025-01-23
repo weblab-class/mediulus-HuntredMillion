@@ -1,5 +1,5 @@
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import './Comment/css'
+import './Comment.css'
 
 /**
  * 
