@@ -1,98 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Feed.css";
 import Post from "../modules/Post.jsx";
 import { get } from "../../utilities";
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import IconButton from "@mui/material/IconButton";
 
 const Feed = (props) => {
-    /*This is the info for the content of the page*/
-    const [posts, setPosts] = useState([]);
+  /* State for posts */
+  const [posts, setPosts] = useState([]);
 
-    // called when the "Feed" component "mounts", i.e.
-    // when it shows up on screen
-    useEffect(() => {
-        document.title = "Post Feed";
-        get("/api/posts").then((postObjs) => {
+  /* Fetch posts when the component mounts */
+  useEffect(() => {
+    document.title = "Post Feed";
+    get("/api/posts")
+      .then((postObjs) => {
+        console.log('PostObjs:', postObjs)
+        if (postObjs && postObjs.length) {
           let reversedpostObjs = postObjs.reverse();
           setPosts(reversedpostObjs);
-        });
-    }, []);
-
-    let postsList = null;
-    const hasPosts = posts.length !== 0;
-    if (hasPosts) {
-    postsList = posts.map((postObj) => (
-
-      <Post
-        key={`Card_${postObj._id}`}
-        _id={postObj._id}
-        fractal_id = {postObj.fractal_id}
-        creator_id={postObj.creator_id}
-        img_url = {postObj.img_url}
-        likes = {postObj.likes}
-        userId={props.userId}
-        description={postObj.description}
-      />
-    
-    ));
-    } else {
-        postsList = <div>No Post!</div>;
-    }
-
-    let postsListEven = [];
-    let postsListOdd = [];
-    for (let postObj of postsList) {
-        if (parseInt(postObj._id) % 2 === 0) {
-            postsListEven.push(postObj);
         } else {
-            postsListOdd.push(postObj)
+          setPosts([]);
         }
-    }
+      })
+      .catch((err) => {
+        console.error("Error fetching posts:", err);
+        setPosts([]);
+      });
+  }, []);
 
-    /*This is the info for the button*/
-    const [showCustomDisplay, setShowCustomDisplay] = useState(false);
+  console.log("Post HEREEE: ", posts);
 
-    const toggleCustomDisplay = () => {
-        setShowCustomDisplay(!showCustomDisplay);
-    };
+  let postsEven = posts.filter((_, index) => index % 2 === 0);
+  let postsOdd = posts.filter((_, index) => index % 2 !== 0);
 
-    const hideCustomDisplay = () => {
-        setShowCustomDisplay(false);
-    };
+  
+  let postsListEven = postsEven.map((postObj) => (
+    <Post
+      key={`Card_${postObj._id}`}
+      _id={postObj._id}
+      fractal_id={postObj.fractal_id}
+      creator_id={postObj.creator_id}
+      img_url={postObj.img_url}
+      likes={postObj.likes}
+      userId={props.userId}
+      description={postObj.description}
+    />
+  ));
 
+  let postsListOdd = postsOdd.map((postObj) => (
+    <Post
+      key={`Card_${postObj._id}`}
+      _id={postObj._id}
+      fractal_id={postObj.fractal_id}
+      creator_id={postObj.creator_id}
+      img_url={postObj.img_url}
+      likes={postObj.likes}
+      userId={props.userId}
+      description={postObj.description}
+    />
+  ));
 
-    return (
-        <div className="Container">
-            <div className="Buttons">
-                <button 
-                    className="CustomFeed" 
-                    onClick={toggleCustomDisplay}
-                >
-                    Customize Feed
-                </button>
-                <div 
-                    className={`CustomDisplay ${showCustomDisplay ? "visible" : ""}`}
-                >
-                    <RemoveCircleOutlineIcon 
-                        onClick={hideCustomDisplay}
-                        style={{ cursor: "pointer" }}/>
-                    <button className="DisplayButton">
-                        <p onClick={hideCustomDisplay}>Trending</p>
-                        <p onClick={hideCustomDisplay}>Following</p>
-                    </button>
-                </div>
-            </div>
+  console.log("Posts (Even):", postsEven);
+  console.log("Posts (Odd):", postsOdd);
+  console.log("Posts List (Even Components):", postsListEven);
+  console.log("Posts List (Odd Components):", postsListOdd);
+  /* State for toggling the custom display */
+  const [showCustomDisplay, setShowCustomDisplay] = useState(false);
 
-            <div className="postGallery">
-                <div className="postGallery1">
-                    {postsListEven}
-                </div>
-                <div clasName = "postGallery2">
-                    {postsListOdd}
-                </div>
-            </div>
+  const toggleCustomDisplay = () => {
+    setShowCustomDisplay(!showCustomDisplay);
+  };
+
+  const hideCustomDisplay = () => {
+    setShowCustomDisplay(false);
+  };
+
+  return (
+    <div className="Container">
+      <div className="Buttons">
+        <button className="CustomFeed" onClick={toggleCustomDisplay}>
+          Customize Feed
+        </button>
+        <div className={`CustomDisplay ${showCustomDisplay ? "visible" : ""}`}>
+          <IconButton className = 'MinusButton' onClick={hideCustomDisplay}>
+            <RemoveCircleOutlineIcon />
+          </IconButton>
+          <div className="DisplayButton">
+            <p onClick={hideCustomDisplay}>Trending</p>
+            <p onClick={hideCustomDisplay}>Following</p>
+          </div>
         </div>
-    );
+      </div>
+      <div className="postGallery">
+        <div className="postGallery1">{postsListEven}</div>
+        <div className="postGallery2">{postsListOdd}</div>
+      </div>
+    </div>
+  );
 };
 
 export default Feed;

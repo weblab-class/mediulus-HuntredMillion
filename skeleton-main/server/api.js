@@ -50,10 +50,43 @@ router.get('/user', function(req, res) {
   });
 });
 
-router.get("/posts", (req, res) => {
-  // empty selector means get all documents
-  Fractal.find({}).then((fractals) => res.send(fractals));
+router.get("/posts", async (req, res) => {
+  try {
+    const fractals = await Fractal.find({});
+    res.send(fractals);
+  } catch (err) {
+    res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+  }
 });
+
+router.get("/comment", async (req,res) => {
+  try {
+    const comments = await Comment.find({fractal_id: req.query.parent});
+    res.send(comments)
+  } catch (err) {
+    res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+  }
+});
+
+router.get("/comment", async (req, res) => {
+  Comment.find({ fractal_id: req.query.fractal_id }).then((comments) => {
+    res.send(comments); // You need to send the response back to the client
+  }).catch((err) => {
+    res.status(500).json({ error: "Failed to fetch comments" }); // Handle errors
+  });
+});
+
+
+// router.get("/posts", async (req, res) => {
+//   try {
+//     const fractals = await Fractal.find({ is_public: true }); // Add the filter here
+//     res.send(fractals);
+//   } catch (err) {
+//     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+//   }
+// });
+
+
 
 
 // anything else falls to this "not found" case

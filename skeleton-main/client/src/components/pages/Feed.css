@@ -19,7 +19,7 @@
     flex-wrap: wrap; /* Allows wrapping to the next line */
 }
 
-button {
+button, .DisplayButton {
     display: flex;
     justify-content: center;
     align-items: center;
