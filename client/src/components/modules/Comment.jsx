@@ -1,11 +1,11 @@
 import React from "react";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import "./Comment.css";
+import UserTextBlock from './UserTextBlock.jsx'
 
 /**
  * A single comment on a fractal post.
  * 
- * @param {String} creator_id The ID of the user who created the comment.
+ * @param {String} creator_name The ID of the user who created the comment.
  * @param {String} fractal_id The ID of the fractal this comment belongs to.
  * @param {String} content The text content of the comment.
  */
@@ -14,11 +14,8 @@ const Comment = (props) => {
   console.log("this is the content: ", props.content)
     return (
       <div className="CommentContainer">
-        <PersonOutlineIcon />
-        <div className="CommentDetails">
-          <p>{props.creator_id}</p>
-          <p>{typeof props.content === "string" ? props.content : "Invalid content"}</p>
-        </div>
+        <UserTextBlock user_name = {props.creator_name} content = {props.content}/>
+        <hr/>
       </div>
     );
   };

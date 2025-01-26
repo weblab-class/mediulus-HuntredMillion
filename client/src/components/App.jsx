@@ -12,12 +12,13 @@ import NavBar from "./modules/NavBar";
 export const UserContext = createContext(null);
 
 const App = () => {
-  const [userId, setUserId] = useState(undefined);
+  const [userId, setUserId] = useState(() => localStorage.getItem("userId") || undefined);
 
   useEffect(() => {
     get("/api/whoami").then((user) => {
       if (user._id) {
         setUserId(user._id);
+        localStorage.setItem("userId", user._id); // Store userId in localStorage
       }
     });
   }, []);
@@ -28,12 +29,14 @@ const App = () => {
     console.log(`Logged in as ${decodedCredential.name}`);
     post("/api/login", { token: userToken }).then((user) => {
       setUserId(user._id);
+      localStorage.setItem("userId", user._id); // Store userId in localStorage
       post("/api/initsocket", { socketid: socket.id });
     });
   };
 
   const handleLogout = () => {
     setUserId(undefined);
+    localStorage.removeItem("userId"); // Clear userId from localStorage
     post("/api/logout");
   };
 

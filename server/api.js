@@ -50,9 +50,9 @@ router.get('/user', function(req, res) {
   });
 });
 
-router.get("/posts", async (req, res) => {
+router.get("/Privateposts", async (req, res) => {
   try {
-    const fractals = await Fractal.find({});
+    const fractals = await Fractal.find({is_public: true});
     res.send(fractals);
   } catch (err) {
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
@@ -76,16 +76,84 @@ router.get("/comment", async (req, res) => {
   });
 });
 
+router.get('/UserName', async (req, res) => {
+  User.findById(req.query.user_id).then((user) => {
+    res.send(user);
+  });
+});
 
-// router.get("/posts", async (req, res) => {
-//   try {
-//     const fractals = await Fractal.find({ is_public: true }); // Add the filter here
-//     res.send(fractals);
-//   } catch (err) {
-//     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
-//   }
-// });
+router.get('/isLiked', async (req, res) => {
+  const user = await User.findById(req.query.user);
 
+  if (user) {
+    if (user.likes.includes(req.query.fractal)) {
+      res.send(true);
+    } else {
+      res.send(false);
+    }
+  }
+});
+
+// Handle like action
+router.post("/like", async (req, res) => {
+  try {
+    const fractal = await Fractal.findOne({ _id: req.body.parent });
+    const user = await User.findById(req.body.user);
+
+    if (fractal && user) {
+      fractal.likes += 1; // Increment likes
+      await fractal.save();
+
+      user.likes.push(fractal._id);
+      await user.save();
+
+      res.status(200).send({ likes: fractal.likes }); // Send updated likes
+    } else {
+      res.status(404).send({ message: "Fractal not found" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: "Server error", error });
+  }
+});
+
+router.post("/unlike", async (req, res) => {
+  try {
+    const fractal = await Fractal.findOne({ _id: req.body.parent });
+    const user = await User.findById(req.body.user);
+
+    if (fractal && user) {
+      fractal.likes -= 1; // Decrement likes
+      await fractal.save();
+
+      const index = user.likes.indexOf(fractal._id);
+      if (index !== -1) {
+        user.likes.splice(index, 1); 
+      }
+      await user.save();
+
+      res.status(200).send({ likes: fractal.likes }); // Send updated likes
+    } else {
+      res.status(404).send({ message: "Fractal not found" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: "Server error", error });
+  }
+});
+
+router.post("/comment", async (req, res) => {
+  try {
+    const newComment = new Comment({
+      creator_name: req.body.creator || "Anonymous", // Replace with logged-in user logic
+      fractal_id: req.body.parent, // Fractal ID
+      content: req.body.content, // Comment content
+    });
+
+    const savedComment = await newComment.save();
+    res.status(200).send(savedComment); // Respond with the saved comment
+  } catch (error) {
+    res.status(500).send({ error: "Failed to add comment" });
+  }
+});
 
 
 

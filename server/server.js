@@ -104,7 +104,7 @@ app.use((err, req, res, next) => {
   res.status(status);
   res.send({
     status: status,
-    message: err.message,
+    message: err.message + "error's here",
   });
 });
 

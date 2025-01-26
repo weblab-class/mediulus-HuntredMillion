@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   followers: Array,
   following: Array,
   fractals: Array,
+  likes: Array,
 });
 
 // compile model from schema

@@ -72,6 +72,22 @@
 .UserNameAndEdit button {
     font-size: 15px;
 }
+
+.Settings { 
+    min-width: 200px;
+}
+.Settings button{
+    font-size: 20px;
+    font-family: 'Raleway';
+    color:white;
+    background-color: transparent;
+    margin: 7px;
+}
+
+.Settings button:hover {
+    color:#37ABFF;
+}
+
 @media (max-width: 700px) {
     .TopSection {
         display: flex;
@@ -87,4 +103,6 @@
     .PictureContainer, .Settings, .UserBio {
         margin: 10px 0;
     }
+
+    
 }

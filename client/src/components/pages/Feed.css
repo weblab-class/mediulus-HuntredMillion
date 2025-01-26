@@ -1,7 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
 
 .body {
-    width:100%;
     display: flex; /* Enables Flexbox */
     background: transparent;
       
@@ -10,30 +9,49 @@
     align-items: center;
     /* ^^ unsure abt this */
     min-height: 100vh; /* Full viewport height */  
-    padding: 0 20px; /* Add horizontal padding */
+    padding: 20px; /* Add horizontal padding */
+}
+.Container {
+    margin:20px;
+}
+.MinusButton {
+    height: 50px; /* Set the overall button height */
+    width: 50px;  /* Set the overall button width */
 }
 
-.Buttons, .CustomDisplay {
-    display: flex; /* Horizontally aligns the items */
-    margin:5px;
-    flex-wrap: wrap; /* Allows wrapping to the next line */
+.MinusButton path {
+    stroke-width: 1; /* Set the line thickness (1px thin) */
+    fill: none; /* Make sure there's no fill color */
+    stroke: white; /* Set stroke color to white */
 }
 
-button, .DisplayButton {
+.Buttons, .DisplayButton {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
+}
 
+
+.CustomDisplayButton {
+    display: none; /* Default hidden */
+}
+  
+.CustomDisplayButton.visible {
+    display: flex; /* Show when visible */
+}
+
+.MinusButton {
+    size: 50px;
+}
+.CustomFeedButton, .DisplayButton {
+    padding:10px;
     height: 50px;
-    padding: 10px 20px;
     margin: 5px 20px;
-
     border: 1.043px solid #37ABFF;
     border-radius: 34778px;
-    
     backdrop-filter: blur(1.7389342784881592px);
     background-color: transparent;
-
     color:white;
     font-family: "Raleway", sans-serif;
     text-align: center;
@@ -41,30 +59,22 @@ button, .DisplayButton {
     text-transform: uppercase;
 }
 
-.CustomDisplay {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    visibility: hidden;
-    position: relative;
+.postGallery1, .postGallery2 {
+    width:100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
 }
 
 p {
     margin: 0px 10px;
 }
 
-.Container {
-    width: 100%;
-    max-width: 120rem;
-    margin: auto;
-    padding: 0 1.5rem;
-}
 
-.PostsGallery {
-    display: grid; /* Grid layout for posts */
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1.5rem;
+.postGallery {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .Buttons {
@@ -78,12 +88,12 @@ p {
 }
 
 /*interactive*/
-button:hover {
+.DisplayButton:hover, .CustomFeedButton:hover {
     background-color: #37ABFF;
     color: #1e1e1e; /* Invert colors on hover */
 }
 
-.CustomDisplay.visible {
+.CustomDisplayButton.visible {
     opacity: 1;
     transform: translateY(0);
     visibility: visible;
@@ -104,6 +114,9 @@ p:hover {
         margin-top: 10px;
     }
 
+    .postGallery {
+        flex-direction:column;
+    }
     
 }
 

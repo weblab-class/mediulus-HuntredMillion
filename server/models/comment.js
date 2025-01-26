@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 //define a comment schema for the database
 const CommentSchema = new mongoose.Schema({
-  creator_id: String,
   fractal_id: String,
   content: String,
+  creator_name:String,
 });
 
 // compile model from schema
