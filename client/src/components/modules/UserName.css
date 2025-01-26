@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
+
+
+.UserName p {
+    padding-right:10px;
+    color:white;
+}
+
+.UserName {
+    display: flex;
+    font-family: 'Major Mono Display', monospace;
+    text-transform: uppercase;
+    align-items: center;
+}
+
+.icon {
+    color: white;
+}
