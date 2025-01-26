@@ -3,22 +3,31 @@ import { Paper, Slider, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import "./TreeModule.css";
 
-const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
+const TreeModule = ({ id, onDelete, onUpdate, initialValues = {}, checkUpdate = () => true }) => {
+  const [name, setName] = useState(initialValues.name || `Segment ${id}`);
   const [numLines, setNumLines] = useState(initialValues.numLines || 2);
   const [angle, setAngle] = useState(initialValues.angle || 45);
   const [decay, setDecay] = useState(initialValues.decay || 0.5);
+  const [widthDecay, setWidthDecay] = useState(initialValues.widthDecay || 1);
+  const [color, setColor] = useState(initialValues.color || "#000000");
 
   // Update parent component whenever values change
   useEffect(() => {
-    onUpdate(id, { numLines, angle, decay });
-  }, [numLines, angle, decay]);
+    onUpdate(id, { name, numLines, angle, decay, widthDecay, color });
+  }, [name, numLines, angle, decay, widthDecay, color]);
+
+  const handleNameChange = (event) => {
+    setName(event.target.value);
+  };
 
   const handleNumLines = (event, newValue) => {
-    setNumLines(newValue);
-    // const maxAngle = 360 / newValue;
-    // if (angle > maxAngle) {
-    //   setAngle(Math.round(maxAngle / 2));
-    // }
+    if (checkUpdate(id, { ...initialValues, numLines: newValue })) {
+      console.log("check3");
+      setNumLines(newValue);
+    } else {
+      // Force slider back to previous value
+      event.target.value = numLines;
+    }
   };
 
   const handleAngle = (event, newValue) => {
@@ -32,10 +41,23 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
     setDecay(newValue);
   };
 
+  const handleWidthDecay = (event, newValue) => {
+    setWidthDecay(newValue);
+  };
+
+  const handleColorChange = (event) => {
+    setColor(event.target.value);
+  };
+
   return (
     <Paper elevation={2} className="tree-module">
       <div className="tree-module-header">
-        <div className="tree-module-title">Tree Module {id}</div>
+        <input
+          type="text"
+          value={name}
+          onChange={handleNameChange}
+          className="tree-module-title-input"
+        />
         <IconButton size="small" onClick={() => onDelete(id)} className="tree-module-close">
           <CloseIcon />
         </IconButton>
@@ -70,7 +92,7 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
         </div>
 
         <div className="tree-module-control">
-          <div className="tree-module-label">Decay Factor</div>
+          <div className="tree-module-label">Length Decay Factor</div>
           <Slider
             className="tree-module-slider"
             value={decay}
@@ -80,6 +102,32 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {} }) => {
             step={0.01}
             valueLabelDisplay="auto"
           />
+        </div>
+
+        <div className="tree-module-control">
+          <div className="tree-module-label">Width Decay Factor</div>
+          <Slider
+            className="tree-module-slider"
+            value={widthDecay}
+            onChange={handleWidthDecay}
+            min={0}
+            max={1}
+            step={0.01}
+            valueLabelDisplay="auto"
+          />
+        </div>
+
+        <div className="tree-module-control">
+          <div className="tree-module-label">Color</div>
+          <div className="tree-module-color-container">
+            <input
+              type="color"
+              value={color}
+              onChange={handleColorChange}
+              className="tree-module-color-picker"
+            />
+            <span className="tree-module-color-value">{color}</span>
+          </div>
         </div>
       </div>
     </Paper>

@@ -45,3 +45,67 @@
 .tree-module-slider {
   width: 100%;
 }
+
+.tree-module-title-input {
+  font-size: 1.25rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 200px;
+  transition: background-color 0.2s;
+}
+
+.tree-module-title-input:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.tree-module-title-input:focus {
+  background-color: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.tree-module-color-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tree-module-color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tree-module-color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.tree-module-color-picker::-webkit-color-swatch {
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.tree-module-color-picker::-moz-color-swatch {
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.tree-module-color-value {
+  font-family: monospace;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.9rem;
+}
+
+.tree-module-color-picker:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}

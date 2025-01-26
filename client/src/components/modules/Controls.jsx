@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./Controls.css";
 import {
   Paper,
@@ -17,10 +17,13 @@ const Controls = ({
   setDrawMode,
   numIters,
   setNumIters,
+  initWidth,
+  setInitWidth,
   treeModuleParallels,
   setTMPs,
   onTMPUpdate,
-  setLines,
+  calculateAllBranchesLines,
+  generateFractalLines,
 }) => {
   const handleDrawModeChange = (event) => {
     setDrawMode(event.target.value);
@@ -29,15 +32,34 @@ const Controls = ({
   const handleAddTMP = () => {
     const defaultTreeModule = {
       id: Date.now(),
+      name: "Segment 1",
       numLines: 2,
       angle: 45,
       decay: 0.5,
+      widthDecay: 1,
+      color: "#000000",
     };
+    const totalLines = calculateAllBranchesLines([
+      ...treeModuleParallels,
+      {
+        numIters: 1,
+        treeModules: [defaultTreeModule],
+      },
+    ]);
+
+    if (totalLines > 10000000) {
+      console.warn("Cannot add branch - would exceed line limit");
+      return;
+    }
+
+    const newBranchNumber = treeModuleParallels.length + 1;
     setTMPs([
       ...treeModuleParallels,
       {
         id: Date.now(),
+        name: `Branch ${newBranchNumber}`,
         numIters: 1,
+        initWidth: 2,
         treeModules: [defaultTreeModule],
       },
     ]);
@@ -45,13 +67,13 @@ const Controls = ({
 
   const handleDeleteTMP = (id) => {
     setTMPs(treeModuleParallels.filter((branch) => branch.id !== id));
-    setLines((prevLines) => ({
-      ...prevLines,
-      branches: Object.fromEntries(
-        Object.entries(prevLines.branches).filter(([branchId]) => branchId !== id.toString())
-      ),
-    }));
   };
+
+  // Add useEffect to watch for treeModuleParallels changes
+  useEffect(() => {
+    // When treeModuleParallels changes, regenerate lines
+    generateFractalLines(null);
+  }, [treeModuleParallels]);
 
   return (
     <Paper elevation={3} className="controls-container">
@@ -98,6 +120,8 @@ const Controls = ({
             onDelete={handleDeleteTMP}
             onUpdate={onTMPUpdate}
             initialValues={module}
+            calculateAllBranchesLines={calculateAllBranchesLines}
+            treeModuleParallels={treeModuleParallels}
           />
         ))}
       </div>

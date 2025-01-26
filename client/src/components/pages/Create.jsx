@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Controls from "../modules/Controls";
 import Display from "../modules/Display";
 import "./Create.css";
@@ -7,10 +7,7 @@ const Create = () => {
   const [drawMode, setDrawMode] = useState("line");
   const [numIters, setNumIters] = useState(1);
   const [treeModuleParallels, setTMPs] = useState([]);
-  const [lines, setLines] = useState({
-    initial: [],
-    branches: {}, // Will store lines for each branch, keyed by branch ID
-  });
+  const [renderTrigger, setRenderTrigger] = useState(0);
 
   const generateInitialLine = () => {
     const initialLength = 250;
@@ -21,9 +18,17 @@ const Create = () => {
         x2: 0,
         y2: 0,
         generation: 0,
+        width: 1,
+        color: "#000000",
       },
     ];
   };
+
+  // Initialize linesRef with the initial line
+  const linesRef = useRef({
+    initial: generateInitialLine(),
+    branches: {},
+  });
 
   const generateFractalLines = (branchId = null) => {
     // If no branchId provided, regenerate everything
@@ -38,70 +43,83 @@ const Create = () => {
         newLines.branches[branch.id] = generateBranchLines(branch, newLines.initial);
       });
 
-      setLines(newLines);
+      // Store in ref instead of state
+      linesRef.current = newLines;
+      setRenderTrigger((prev) => prev + 1);
       return;
     }
 
     // If branchId provided, only update that branch's lines
-    setLines((prevLines) => ({
-      ...prevLines,
+    const updatedBranch = treeModuleParallels.find((b) => b.id === branchId);
+    if (!updatedBranch) return;
+
+    // Generate new lines and update just that branch
+    linesRef.current = {
+      ...linesRef.current,
       branches: {
-        ...prevLines.branches,
-        [branchId]: generateBranchLines(
-          treeModuleParallels.find((b) => b.id === branchId),
-          prevLines.initial
-        ),
+        ...linesRef.current.branches,
+        [branchId]: generateBranchLines(updatedBranch, linesRef.current.initial),
       },
-    }));
+    };
+
+    // Trigger re-render
+    setRenderTrigger((prev) => prev + 1);
   };
 
   const generateBranchLines = (branch, initialLines) => {
     const branchLines = [];
     const initialLength = 250;
+    const initialWidth = branch.initWidth;
+    let currentGenLines = initialLines;
+    const BATCH_SIZE = 1000;
 
-    // Generate lines for each tree module in the branch
-    branch.treeModules.forEach((module) => {
-      for (let iter = 0; iter < branch.numIters; iter++) {
-        const newLines = [];
-        const prevGenLines =
-          iter === 0 ? initialLines : branchLines.filter((line) => line.generation === iter);
+    // For each iteration
+    for (let iter = 0; iter < branch.numIters; iter++) {
+      const module = branch.treeModules[iter % branch.treeModules.length];
+      const newLines = [];
 
-        prevGenLines.forEach((parentLine) => {
-          const baseAngle = Math.atan2(
-            parentLine.y2 - parentLine.y1,
-            parentLine.x2 - parentLine.x1
-          );
+      currentGenLines.forEach((parentLine) => {
+        const baseAngle = Math.atan2(parentLine.y2 - parentLine.y1, parentLine.x2 - parentLine.x1);
 
-          const newLength = initialLength * Math.pow(module.decay, iter + 1);
-          const totalSpread = (module.numLines - 1) * module.angle;
-          const startAngle = baseAngle - totalSpread / 2;
+        const newLength = initialLength * Math.pow(module.decay, iter + 1);
+        const newWidth = (parentLine.width || initialWidth) * module.widthDecay;
 
-          for (let i = 0; i < module.numLines; i++) {
-            let branchAngle;
-            if (module.numLines % 2 === 0) {
-              const offset = (i - (module.numLines - 1) / 2) * ((module.angle * Math.PI) / 180);
-              branchAngle = baseAngle + offset;
-            } else {
-              const offset =
-                (i - Math.floor(module.numLines / 2)) * ((module.angle * Math.PI) / 180);
-              branchAngle = baseAngle + offset;
-            }
-
-            const newX = parentLine.x2 + newLength * Math.cos(branchAngle);
-            const newY = parentLine.y2 + newLength * Math.sin(branchAngle);
-
-            newLines.push({
-              x1: parentLine.x2,
-              y1: parentLine.y2,
-              x2: newX,
-              y2: newY,
-              generation: iter + 1,
-            });
+        for (let i = 0; i < module.numLines; i++) {
+          let branchAngle;
+          if (module.numLines === 1) {
+            branchAngle = baseAngle - (module.angle * Math.PI) / 180;
+          } else if (module.numLines % 2 === 0) {
+            const offset = (i - (module.numLines - 1) / 2) * ((module.angle * Math.PI) / 180);
+            branchAngle = baseAngle + offset;
+          } else {
+            const offset = (i - Math.floor(module.numLines / 2)) * ((module.angle * Math.PI) / 180);
+            branchAngle = baseAngle + offset;
           }
-        });
-        branchLines.push(...newLines);
+
+          const newX = parentLine.x2 + newLength * Math.cos(branchAngle);
+          const newY = parentLine.y2 + newLength * Math.sin(branchAngle);
+
+          newLines.push({
+            x1: parentLine.x2,
+            y1: parentLine.y2,
+            x2: newX,
+            y2: newY,
+            width: newWidth,
+            color: module.color || "#000000",
+            generation: iter + 1,
+          });
+        }
+      });
+
+      // Push newLines to branchLines in chunks
+      for (let i = 0; i < newLines.length; i += BATCH_SIZE) {
+        const chunk = newLines.slice(i, i + BATCH_SIZE);
+        branchLines.push(...chunk);
       }
-    });
+
+      // Update currentGenLines for next iteration
+      currentGenLines = newLines;
+    }
 
     return branchLines;
   };
@@ -123,10 +141,38 @@ const Create = () => {
 
   // Modify handleTMPUpdate to track the last updated branch
   const handleTMPUpdate = (id, updates) => {
-    setLastUpdatedId(id);
+    setLastUpdatedId(id); //max update dept exceeded warning here.
     setTMPs((prevModules) =>
       prevModules.map((module) => (module.id === id ? { ...module, ...updates } : module))
     );
+  };
+
+  const calculateTotalLines = (branch) => {
+    let total = 1; // Start with initial line
+    let currentGen = 1; // Number of lines in current generation
+
+    for (let i = 0; i < branch.numIters; i++) {
+      const module = branch.treeModules[i % branch.treeModules.length];
+      currentGen *= module.numLines; // Each line splits into numLines new lines
+      total += currentGen; // Add this generation's lines to total
+    }
+
+    return total;
+  };
+
+  const calculateAllBranchesLines = (branches, newBranch = null, newIters = null) => {
+    let total = 0;
+    console.log("check1");
+    branches.forEach((branch) => {
+      if (branch.id === newBranch?.id) {
+        total += calculateTotalLines({ ...branch, numIters: newIters });
+      } else {
+        total += calculateTotalLines(branch);
+      }
+    });
+    console.log(treeModuleParallels);
+    console.log(total);
+    return total;
   };
 
   return (
@@ -136,8 +182,8 @@ const Create = () => {
           <Display
             lines={
               drawMode === "point"
-                ? Object.values(lines.branches).flat()
-                : [...lines.initial, ...Object.values(lines.branches).flat()]
+                ? Object.values(linesRef.current.branches).flat()
+                : [...linesRef.current.initial, ...Object.values(linesRef.current.branches).flat()]
             }
             drawMode={drawMode}
             startPoint={drawMode === "point" ? { x: 0, y: 0 } : null}
@@ -152,7 +198,8 @@ const Create = () => {
             treeModuleParallels={treeModuleParallels}
             setTMPs={setTMPs}
             onTMPUpdate={handleTMPUpdate}
-            setLines={setLines}
+            calculateAllBranchesLines={calculateAllBranchesLines}
+            generateFractalLines={generateFractalLines}
           />
         </div>
       </div>

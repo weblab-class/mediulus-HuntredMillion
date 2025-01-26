@@ -76,14 +76,18 @@ const Display = ({ lines, drawMode, startPoint }) => {
     // Draw lines
     ctx.lineWidth = 1 / zoom;
     lines.forEach((line) => {
-      ctx.beginPath();
-      ctx.moveTo(line.x1, line.y1);
-      ctx.lineTo(line.x2, line.y2);
-      ctx.stroke();
+      if (line.width) {
+        ctx.beginPath();
+        ctx.lineWidth = line.width;
+        ctx.strokeStyle = line.color || "#000000";
+        ctx.moveTo(line.x1, line.y1);
+        ctx.lineTo(line.x2, line.y2);
+        ctx.stroke();
+      }
     });
 
     ctx.restore();
-  }, [zoom, pan, lines, dimensions]);
+  }, [zoom, pan, lines, dimensions, drawMode, startPoint]);
 
   const handleZoom = (delta) => {
     setZoom((prevZoom) => {
