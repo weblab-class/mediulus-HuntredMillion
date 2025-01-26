@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
 
 .UserName p {
     padding-right:10px;
@@ -8,8 +7,7 @@
 
 .UserName {
     display: flex;
-    font-family: 'Major Mono Display', monospace;
-    text-transform: uppercase;
+    font-family: 'Monoton', monospace;
     align-items: center;
 }
 

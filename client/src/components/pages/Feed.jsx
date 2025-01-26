@@ -31,7 +31,7 @@ const Feed = (props) => {
     document.title = "Post Feed";
 
     // Fetch posts
-    get("/api/Privateposts")
+    get("/api/Publicposts")
       .then((postObjs) => {
         console.log("PostObjs:", postObjs);
         if (postObjs && postObjs.length) {
@@ -45,7 +45,6 @@ const Feed = (props) => {
         console.error("Error fetching posts:", err);
         setPosts([]);
       });
-    // Fetch username
   }, []);
 
 
@@ -58,6 +57,7 @@ const Feed = (props) => {
       _id={postObj._id}
       creator_id={postObj.creator_id}
       img_url={postObj.img_url}
+      is_public = {postObj.is_public}
       likes={postObj.likes}
       userId={userId}
       userName = {userName}
@@ -71,6 +71,7 @@ const Feed = (props) => {
       _id={postObj._id}
       creator_id={postObj.creator_id}
       img_url={postObj.img_url}
+      is_public = {postObj.is_public}
       likes={postObj.likes}
       userId={userId}
       userName = {userName}

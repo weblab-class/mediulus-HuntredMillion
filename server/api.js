@@ -11,8 +11,8 @@ const express = require("express");
 
 // import models so we can interact with the database
 const User = require("./models/user");
-const Comment = require("./models/comment")
-const Fractal = require("./models/fractal")
+const Comment = require("./models/comment");
+const Fractal = require("./models/fractal");
 
 // import authentication library
 const auth = require("./auth");
@@ -44,45 +44,58 @@ router.post("/initsocket", (req, res) => {
 // |------------------------------|
 // | write your API methods below!|
 // |------------------------------|
-router.get('/user', function(req, res) {
-  User.findOne({ _id: req.query._id }, function(err, user) {
+router.get("/user", function (req, res) {
+  User.findOne({ _id: req.query._id }, function (err, user) {
     res.send(user);
   });
 });
 
-router.get("/Privateposts", async (req, res) => {
+router.get("/Publicposts", async (req, res) => {
   try {
-    const fractals = await Fractal.find({is_public: true});
+    const fractals = await Fractal.find({ is_public: true });
     res.send(fractals);
   } catch (err) {
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
   }
 });
 
-router.get("/comment", async (req,res) => {
+router.get("/allPosts", async (req, res) => {
+  console.log('here i am looking')
+  console.log(req.query.user)
   try {
-    const comments = await Comment.find({fractal_id: req.query.parent});
-    res.send(comments)
+    const fractals = await Fractal.find({ creator_id: req.query.user });
+    res.send(fractals);
   } catch (err) {
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
   }
 });
 
 router.get("/comment", async (req, res) => {
-  Comment.find({ fractal_id: req.query.fractal_id }).then((comments) => {
-    res.send(comments); // You need to send the response back to the client
-  }).catch((err) => {
-    res.status(500).json({ error: "Failed to fetch comments" }); // Handle errors
-  });
+  try {
+    const comments = await Comment.find({ fractal_id: req.query.parent });
+    res.send(comments);
+  } catch (err) {
+    res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+  }
 });
 
-router.get('/UserName', async (req, res) => {
+router.get("/comment", async (req, res) => {
+  Comment.find({ fractal_id: req.query.fractal_id })
+    .then((comments) => {
+      res.send(comments); // You need to send the response back to the client
+    })
+    .catch((err) => {
+      res.status(500).json({ error: "Failed to fetch comments" }); // Handle errors
+    });
+});
+
+router.get("/UserName", async (req, res) => {
   User.findById(req.query.user_id).then((user) => {
     res.send(user);
   });
 });
 
-router.get('/isLiked', async (req, res) => {
+router.get("/isLiked", async (req, res) => {
   const user = await User.findById(req.query.user);
 
   if (user) {
@@ -127,7 +140,7 @@ router.post("/unlike", async (req, res) => {
 
       const index = user.likes.indexOf(fractal._id);
       if (index !== -1) {
-        user.likes.splice(index, 1); 
+        user.likes.splice(index, 1);
       }
       await user.save();
 
@@ -154,8 +167,6 @@ router.post("/comment", async (req, res) => {
     res.status(500).send({ error: "Failed to add comment" });
   }
 });
-
-
 
 // anything else falls to this "not found" case
 router.all("*", (req, res) => {

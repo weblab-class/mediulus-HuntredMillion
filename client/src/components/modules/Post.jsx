@@ -21,6 +21,7 @@ const Post = (props) => {
  * @param {String} userId The current user
  * @param {String} description The caption on the fractal
  * @param {String} userName the name of the current user
+ * @param {Boolean} is_public
  */
   ///////////////////////////////
   //Things to do with comments//
@@ -74,7 +75,7 @@ const Post = (props) => {
   const [likes, setLikes] = useState(props.likes);
 
   useEffect(() => {
-    get('/api/isLiked', {fractal: props._id,user: props.userId}).then((likeBool) =>
+    get('/api/isLiked', {fractal: props._id, user: props.userId}).then((likeBool) =>
     setLiked(likeBool));
   }, []);
  
@@ -110,8 +111,10 @@ const Post = (props) => {
             <img className="FractalImage" alt="Fractal" />
 
             <div className="ContentContainer">
+    
               <UserTextBlock user_name = {props.creator_id} content = {props.description}/>
 
+              {props.is_public && ( // Conditionally render LikeAndComment only if is_public is true
               <div className="LikeAndComment">
                 <IconButton onClick={toggleComments}>
                   <ChatBubbleOutlineIcon className="CommentButton" />
@@ -125,6 +128,7 @@ const Post = (props) => {
                 </IconButton>
                 <p className="NumberOfLikes">{likes}</p>
               </div>
+            )}
             </div>
           </div>
           ///////////////////////////////
