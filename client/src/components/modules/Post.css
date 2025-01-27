@@ -6,6 +6,7 @@
     padding: 10px;
     max-height: 300px;
     overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Style the scrollbar */

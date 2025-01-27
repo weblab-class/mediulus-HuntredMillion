@@ -87,7 +87,6 @@ const Post = (props) => {
 
     // Call the correct endpoint based on the new liked state
     const endpoint = newLiked ? "/api/like" : "/api/unlike";
-    console.log('user id:',props.userId)
     post(endpoint, { parent: props._id, user: props.userId })
       .then((response) => {
         setLikes(response.likes); // Update likes with the new count from the backend

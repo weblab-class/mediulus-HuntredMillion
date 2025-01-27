@@ -7,9 +7,10 @@ import { useNavigate } from 'react-router-dom';
 /**
  * A single comment on a fractal post.
  * 
- * @param {String} user_name The ID of the user who created the comment.
+ * @param {String} user_name The name of the user who created the comment.
  */
 const UserName = (props) => {
+  console.log('inside username', props.user_name);
     const navigate = useNavigate();
 
     const goToProfile = (username) => {
@@ -20,7 +21,6 @@ const UserName = (props) => {
     return (
       <div className="UserName">
         <p>{props.user_name}</p>
-        {console.log('username',props.user_name.replace(/\s+/g, ""))}
         <IconButton onClick={() => goToProfile(props.user_name)}>
           <PersonOutlineIcon  className = "icon"/>
         </IconButton>

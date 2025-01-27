@@ -8,7 +8,6 @@ import { UserContext } from "../App";
 
 const NavBar = () => {
   const { userId, handleLogin, handleLogout } = useContext(UserContext);
-  console.log('here is the userId: ', userId)
   return (
     <nav>
       <div className="login">
