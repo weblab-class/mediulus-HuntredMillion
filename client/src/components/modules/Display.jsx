@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import HomeIcon from "@mui/icons-material/Home";
 
-const Display = ({ lines, drawMode, startPoint }) => {
+const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -34,6 +34,11 @@ const Display = ({ lines, drawMode, startPoint }) => {
     // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Add effect to notify parent of view changes
+  useEffect(() => {
+    onViewChange?.({ zoom, pan });
+  }, [zoom, pan, onViewChange]);
 
   // Drawing effect
   useEffect(() => {

@@ -14,11 +14,13 @@
 }
 
 .create-display-wrapper {
-  flex: 2;
   height: 85vh;
+  aspect-ratio: 1; /* Makes width equal to height */
+  flex: none; /* Prevents flex growing/shrinking */
 }
 
 .create-controls-wrapper {
-  flex: 1;
+  flex: 1; /* Takes up remaining space */
   height: 85vh;
+  min-width: 300px; /* Ensures minimum readable width */
 }

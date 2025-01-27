@@ -8,6 +8,7 @@ const Create = () => {
   const [numIters, setNumIters] = useState(1);
   const [treeModuleParallels, setTMPs] = useState([]);
   const [renderTrigger, setRenderTrigger] = useState(0);
+  const [viewState, setViewState] = useState({ zoom: 1, pan: { x: 0, y: 0 } });
 
   const generateInitialLine = () => {
     const initialLength = 250;
@@ -187,6 +188,7 @@ const Create = () => {
             }
             drawMode={drawMode}
             startPoint={drawMode === "point" ? { x: 0, y: 0 } : null}
+            onViewChange={setViewState}
           />
         </div>
         <div className="create-controls-wrapper">
@@ -200,6 +202,8 @@ const Create = () => {
             onTMPUpdate={handleTMPUpdate}
             calculateAllBranchesLines={calculateAllBranchesLines}
             generateFractalLines={generateFractalLines}
+            linesRef={linesRef}
+            viewState={viewState}
           />
         </div>
       </div>
