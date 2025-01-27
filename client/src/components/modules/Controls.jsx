@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Controls.css";
 import {
   Paper,
@@ -8,9 +8,20 @@ import {
   ToggleButtonGroup,
   Typography,
   Slider,
+  TextField,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import TreeModuleParallel from "./TreeModuleParallel";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import IosShareIcon from "@mui/icons-material/IosShare";
+import DownloadIcon from "@mui/icons-material/Download";
+import { downloadFractal } from "../../utils/exportUtils";
+import DownloadDialog from "./DownloadDialog";
 
 const Controls = ({
   drawMode,
@@ -24,7 +35,17 @@ const Controls = ({
   onTMPUpdate,
   calculateAllBranchesLines,
   generateFractalLines,
+  linesRef,
+  zoom,
+  pan,
+  viewState,
 }) => {
+  const [title, setTitle] = useState("Untitled Fractal");
+  const [description, setDescription] = useState("");
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
+  const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+
   const handleDrawModeChange = (event) => {
     setDrawMode(event.target.value);
   };
@@ -75,35 +96,100 @@ const Controls = ({
     generateFractalLines(null);
   }, [treeModuleParallels]);
 
+  const handleDownloadClick = () => {
+    setDownloadDialogOpen(true);
+  };
+
+  const handleDownload = async (options) => {
+    const canvas = document.querySelector(".display-canvas");
+    await downloadFractal({
+      canvas,
+      linesRef,
+      viewState,
+      backgroundColor: options.includeBackground ? backgroundColor : null,
+      title,
+      scale: options.scale,
+    });
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out the fractal I made on Fractal Flow!",
+          url: "https://fractal.example.com/12345", // Replace with actual URL when ready
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    }
+  };
+
   return (
     <Paper elevation={3} className="controls-container">
       <div className="controls-section">
-        <div className="controls-radio-group">
-          <span className="controls-radio-label">Start With:</span>
-          <label className="controls-radio-option">
-            <input
-              type="radio"
-              value="line"
-              checked={drawMode === "line"}
-              onChange={handleDrawModeChange}
-              name="drawMode"
-            />
-            <span>Line</span>
-          </label>
-          <label className="controls-radio-option">
-            <input
-              type="radio"
-              value="point"
-              checked={drawMode === "point"}
-              onChange={handleDrawModeChange}
-              name="drawMode"
-            />
-            <span>Point</span>
-          </label>
+        <div className="controls-section-header">
+          <div className="controls-section-title">
+            <IconButton
+              size="small"
+              onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+              className={`expand-button ${isSettingsExpanded ? "expanded" : ""}`}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+            <Typography variant="h6">Global Settings</Typography>
+          </div>
         </div>
+
+        {isSettingsExpanded && (
+          <div className="controls-section-content">
+            <TextField
+              fullWidth
+              label="Title"
+              variant="outlined"
+              size="small"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              margin="normal"
+            />
+
+            <TextField
+              fullWidth
+              label="Description"
+              variant="outlined"
+              size="small"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              multiline
+              rows={3}
+              margin="normal"
+            />
+
+            <FormControl fullWidth margin="normal">
+              <FormLabel>Background Color</FormLabel>
+              <div className="controls-color-picker">
+                <input
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  className="controls-color-input"
+                />
+                <Typography variant="body2">{backgroundColor}</Typography>
+              </div>
+            </FormControl>
+
+            <FormControl component="fieldset" margin="normal">
+              <FormLabel component="legend">Start With</FormLabel>
+              <RadioGroup row value={drawMode} onChange={handleDrawModeChange}>
+                <FormControlLabel value="line" control={<Radio size="small" />} label="Line" />
+                <FormControlLabel value="point" control={<Radio size="small" />} label="Point" />
+              </RadioGroup>
+            </FormControl>
+          </div>
+        )}
       </div>
 
-      <Divider className="controls-divider" />
+      <Divider />
 
       <div className="controls-module-header">
         <Typography>Branches: {treeModuleParallels.length}</Typography>
@@ -125,6 +211,24 @@ const Controls = ({
           />
         ))}
       </div>
+
+      <Divider />
+
+      <div className="controls-actions">
+        <IconButton onClick={handleDownloadClick} className="controls-download-button">
+          <DownloadIcon />
+        </IconButton>
+        <button className="controls-post-button">POST</button>
+        <IconButton onClick={handleShare} className="controls-export-button">
+          <IosShareIcon />
+        </IconButton>
+      </div>
+
+      <DownloadDialog
+        open={downloadDialogOpen}
+        onClose={() => setDownloadDialogOpen(false)}
+        onDownload={handleDownload}
+      />
     </Paper>
   );
 };

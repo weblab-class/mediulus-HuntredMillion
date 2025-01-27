@@ -24,10 +24,12 @@ const App = () => {
   }, []);
 
   const handleLogin = (credentialResponse) => {
+    console.log("credentialResponse:", credentialResponse);
     const userToken = credentialResponse.credential;
     const decodedCredential = jwt_decode(userToken);
     console.log(`Logged in as ${decodedCredential.name}`);
     post("/api/login", { token: userToken }).then((user) => {
+      console.log(user);
       setUserId(user._id);
       localStorage.setItem("userId", user._id); // Store userId in localStorage
       post("/api/initsocket", { socketid: socket.id });
@@ -45,7 +47,7 @@ const App = () => {
     handleLogin,
     handleLogout,
   };
-
+  console.log("authContextValue:", authContextValue);
   return (
     <UserContext.Provider value={authContextValue}>
       <NavBar />
