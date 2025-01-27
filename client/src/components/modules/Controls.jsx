@@ -22,8 +22,9 @@ import IosShareIcon from "@mui/icons-material/IosShare";
 import DownloadIcon from "@mui/icons-material/Download";
 import { downloadFractal, createThumbnail } from "../../utils/exportUtils";
 import DownloadDialog from "./DownloadDialog";
-import { post } from "../../utilities";
+import { post, get } from "../../utilities";
 import { UserContext } from "../App";
+import { useLocation } from "react-router-dom";
 
 const Controls = ({
   drawMode,
@@ -42,6 +43,8 @@ const Controls = ({
   pan,
   viewState,
 }) => {
+  const location = useLocation();
+  const existingFractalId = location.state?.fractalId;
   const { userId } = useContext(UserContext);
   const [title, setTitle] = useState("Untitled Fractal");
   const [description, setDescription] = useState("");
@@ -100,9 +103,28 @@ const Controls = ({
     generateFractalLines(null);
   }, [treeModuleParallels]);
 
-  // Create new fractal only when we have a userId
+  // Load existing fractal data if fractalId exists
   useEffect(() => {
-    if (userId) {
+    if (existingFractalId) {
+      setFractalId(existingFractalId);
+      // Load the fractal data
+      get("/api/fractal", { _id: existingFractalId })
+        .then((fractal) => {
+          setTitle(fractal.title);
+          setDescription(fractal.description);
+          setBackgroundColor(fractal.backgroundColor);
+          setDrawMode(fractal.drawMode);
+          setTMPs(fractal.treeModuleParallels);
+        })
+        .catch((err) => {
+          console.error("Failed to load fractal:", err);
+        });
+    }
+  }, [existingFractalId]);
+
+  // Create new fractal only when we have a userId AND no existing fractalId
+  useEffect(() => {
+    if (userId && !existingFractalId) {
       post("/api/createFractal", { userId: userId })
         .then((fractal) => {
           setFractalId(fractal._id);
@@ -111,7 +133,7 @@ const Controls = ({
           console.error("Failed to create fractal:", err);
         });
     }
-  }, [userId]);
+  }, [userId, existingFractalId]);
 
   // Auto-save only when we have both fractalId and userId
   useEffect(() => {

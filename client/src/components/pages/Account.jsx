@@ -29,9 +29,10 @@ const Account = (props) => {
   }, [userId]);
 
   // Fetch posts
+  console.log("user id:", userId);
   useEffect(() => {
-    if (userName) {
-      get("/api/allPosts", { user: userName })
+    if (userId) {
+      get("/api/allPosts", { userId: userId })
         .then((postObjs) => {
           if (postObjs && postObjs.length) {
             const reversedPosts = postObjs.reverse();
@@ -51,7 +52,7 @@ const Account = (props) => {
           setPublicPosts([]);
         });
     }
-  }, [userName]);
+  }, [userId]);
 
   // Fetch bio description
   useEffect(() => {
