@@ -1,5 +1,43 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
+nav {
+  display: flex;
+  align-items:center;
+  justify-content: center;
+}
 
+.login {
+  width: 50%;
+  height:100%;
+  display:flex;
+  justify-content: left;
+  padding: 20px;
+}
+
+.login button {
+  background-color:transparent;
+  color:white;
+  border:none;
+  font-family: 'Raleway';
+  font-size: 25px;
+  
+}
+.login button:hover {
+  color:#37ABFF ;
+}
+
+a:hover {
+  color: #37ABFF;
+}
+
+.create:hover {
+  transform: scale(1.1);
+}
+.navigation {
+  display: flex;
+  width: 150%;
+  height:100%;
+  justify-content: right;
+}
 ul {
     list-style-type: none; /* Removes bullets */
     display: flex; /* Horizontally aligns the items */
@@ -28,12 +66,15 @@ img {
     background-image: url(../imgs/NavBarBackground.png);
     margin-top: 23px;
     margin-bottom: 0px;
+    transition: transform 0.3s ease;
 }
 
 @media (max-width: 700px) {
-  ul {
+  ul, nav, .login, .navigation {
       justify-content: center; /* Center horizontally */
       align-items: center; /* Center vertically */
       flex-direction: column; /* Optional: Stack items vertically */
   }
+
+  
 }

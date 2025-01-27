@@ -90,7 +90,6 @@ const Post = (props) => {
     console.log('user id:',props.userId)
     post(endpoint, { parent: props._id, user: props.userId })
       .then((response) => {
-        console.log("inside request");
         setLikes(response.likes); // Update likes with the new count from the backend
       });
   };

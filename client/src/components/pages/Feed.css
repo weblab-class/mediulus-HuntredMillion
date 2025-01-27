@@ -19,6 +19,9 @@
     width: 50px;  /* Set the overall button width */
 }
 
+.SearchButton {
+    color:white
+}
 .MinusButton path {
     stroke-width: 1; /* Set the line thickness (1px thin) */
     fill: none; /* Make sure there's no fill color */
@@ -32,6 +35,18 @@
     align-items: center;
 }
 
+.Search, .Filter {
+    width: 100%;
+    display:flex;
+}
+
+.Search {
+    justify-content: right;
+}
+
+.Filter {
+    justify-content: left;
+}
 
 .CustomDisplayButton {
     display: none; /* Default hidden */
@@ -79,8 +94,7 @@ p {
 
 .Buttons {
     display: flex; /* Flex container for buttons */
-    flex-wrap: wrap; /* Allow buttons to wrap if needed */
-    justify-content: flex-start; /* Align buttons to the left */
+    justify-content: center; /* Align buttons to the left */
     align-items: center; /* Center buttons vertically within the container */
     gap: 10px; /* Space between buttons */
     margin-left: 0; /* Ensure no unintended margin on the left */
@@ -101,6 +115,11 @@ p {
 
 p:hover {
     color: white
+}
+
+.Search { 
+    display: flex;
+    justify-content: right;
 }
 
 @media (max-width: 700px) {

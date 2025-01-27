@@ -4,6 +4,7 @@ import App from "./components/App";
 import Account from "./components/pages/Account";
 import Feed from "./components/pages/Feed";
 import Create from "./components/pages/Create";
+import UserAccount from './components/pages/UserAccount'
 import NotFound from "./components/pages/NotFound";
 
 import {
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<Feed />} />
       <Route path="/account" element={<Account />} />
       <Route path="/create" element={<Create />} />
+      <Route path="/:username" element={<UserAccount />} />
     </Route>
   )
 );

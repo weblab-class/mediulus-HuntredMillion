@@ -59,9 +59,17 @@ router.get("/Publicposts", async (req, res) => {
   }
 });
 
+
 router.get("/allPosts", async (req, res) => {
-  console.log('here i am looking')
-  console.log(req.query.user)
+  try {
+    const fractals = await Fractal.find({ creator_id: req.query.user });
+    res.send(fractals);
+  } catch (err) {
+    res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+  }
+});
+
+router.get("/UserPosts", async (req, res) => {
   try {
     const fractals = await Fractal.find({ creator_id: req.query.user });
     res.send(fractals);
@@ -100,6 +108,18 @@ router.get("/isLiked", async (req, res) => {
 
   if (user) {
     if (user.likes.includes(req.query.fractal)) {
+      res.send(true);
+    } else {
+      res.send(false);
+    }
+  }
+});
+
+router.get("/isFollowing", async (req, res) => {
+  const user = await User.findById(req.query.currentUser);
+
+  if (user) {
+    if (user.following.includes(req.query.user)) {
       res.send(true);
     } else {
       res.send(false);
@@ -147,6 +167,53 @@ router.post("/unlike", async (req, res) => {
       res.status(200).send({ likes: fractal.likes }); // Send updated likes
     } else {
       res.status(404).send({ message: "Fractal not found" });
+    }
+  } catch (error) {
+    res.status(500).send({ message: "Server error", error });
+  }
+});
+
+router.post('/follow', async (req, res) => {
+  try {
+    const user = await User.findById(req.body.currentUser);
+    const followingUser = await User.findOne({name: req.body.user});
+    
+    if (user && followingUser) {
+      user.following.push(req.body.user);
+      followingUser.followers.push(user.name);
+
+      await user.save();
+      await followingUser.save();
+      res.send(true);
+    } else {
+      res.status(404).send({ message: "User not found" });
+    }
+  } catch (error) {
+    console.log('another error')
+    res.status(500).send({ message: "Server error", error });
+  }
+});
+
+router.post('/unfollow', async (req,res) => {
+  try {
+    const nowuser = await User.findById(req.body.currentUser);
+    const unfollowingUser = await User.findOne({name: req.body.user});
+    if (nowuser && unfollowingUser) {
+      const index = nowuser.following.indexOf(req.body.user);
+      if (index !== -1) {
+        nowuser.following.splice(index,1);
+      }
+      await nowuser.save();
+      res.send(false);
+
+      const index2 = unfollowingUser.followers.indexOf(nowuser.name);
+      if (index2 !== -1) {
+        unfollowingUser.followers.splice(index2, 1);
+      }
+      await unfollowingUser.save();
+
+    } else {
+      res.status(404).send({ message: "User not found" });
     }
   } catch (error) {
     res.status(500).send({ message: "Server error", error });

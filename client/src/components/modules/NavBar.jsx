@@ -11,12 +11,7 @@ const NavBar = () => {
   console.log('here is the userId: ', userId)
   return (
     <nav>
-
-      <ul>
-        <li><Link to="/">Feed</Link></li>
-        <li><Link to="/Account">Account</Link></li>
-        <li  className='create'><Link to="/Create"> <img src={CreateTag}/></Link></li>
-      </ul>
+      <div className="login">
       {userId ? (
         <button
           onClick={() => {
@@ -24,11 +19,19 @@ const NavBar = () => {
             handleLogout();
           }}
         >
-          Logout
+          Log Out
         </button>
       ) : (
         <GoogleLogin onSuccess={handleLogin} onError={(err) => console.log(err)} />
       )}
+      </div>
+      <div className="navigation">
+      <ul>
+        <li className = 'linky' ><Link to="/">Feed</Link></li>
+        <li className = 'linky'><Link to="/Account">Account</Link></li>
+        <li  className='create'><Link to="/Create"> <img src={CreateTag}/></Link></li>
+      </ul>
+      </div>
     </nav>
   );
 };

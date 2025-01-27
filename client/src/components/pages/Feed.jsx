@@ -5,6 +5,7 @@ import { get } from "../../utilities";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import IconButton from "@mui/material/IconButton";
 import { UserContext } from "../App.jsx"
+import SearchIcon from '@mui/icons-material/Search';
 
 const Feed = (props) => {
   /* State for posts */
@@ -13,10 +14,12 @@ const Feed = (props) => {
   const [userName, setUserName] = useState('');
 
   useEffect (() => {
-    console.log('here 1')
+    
     if (userId) {
+      console.log('Fetching username for userId:', userId);
       get("/api/UserName", { user_id: userId })
         .then((user) => {
+          
           console.log("Here is the userName:", user);
           setUserName(user.name); // Update state with the username
         })
@@ -92,10 +95,17 @@ const Feed = (props) => {
     setShowCustomDisplay(false);
   };
 
+  const [search, setSearch] = useState(false);
+
+  console.log("search:", search)
+  const toggleSearch = () => {
+    setSearch(!search);
+  }
   return (
     <div className="Container">
       <div className="Buttons">
 
+        <div className="Filter">
         <button className="CustomFeedButton" onClick={toggleCustomDisplay}>
           Customize Feed
         </button>
@@ -111,13 +121,20 @@ const Feed = (props) => {
           </div>
         </div>
 
+        </div>
+        <div className = 'Search'>
+          <textarea placeholder = 'Find Friends'></textarea>
+          <IconButton onClick = {toggleSearch}>
+            <SearchIcon className = 'SearchButton'/>
+          </IconButton>
+        </div>
       </div>
-
-
       <div className="postGallery">
         <div className="postGallery1">{postsListEven}</div>
         <div className="postGallery2">{postsListOdd}</div>
       </div>
+
+      
     </div>
   );
 };
