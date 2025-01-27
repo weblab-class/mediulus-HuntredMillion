@@ -298,10 +298,11 @@ router.post("/createFractal", async (req, res) => {
 
     // Convert buffer to base64 data URL
     const base64Data = `data:image/png;base64,${defaultThumbnailBuffer.toString("base64")}`;
-
+    const user = User.findById(req.body.userId);
     // Create new fractal with default values
     const newFractal = new Fractal({
       creator_id: req.body.userId,
+      creator_name: user.name,
       title: "Untitled Fractal",
       description: "",
       backgroundColor: "#FFFFFF",

@@ -22,6 +22,7 @@ const Post = (props) => {
    * @param {String} description The caption on the fractal
    * @param {String} userName the name of the current user
    * @param {Boolean} is_public
+   * @param {String} creator_name
    */
   ///////////////////////////////
   //Things to do with comments//
@@ -142,7 +143,7 @@ const Post = (props) => {
             </div>
 
             <div className="ContentContainer">
-              <UserTextBlock user_name={props.creator_id} content={props.description} />
+              <UserTextBlock user_name={props.creator_name} content={props.description} />
 
               {props.is_public && ( // Conditionally render LikeAndComment only if is_public is true
                 <div className="LikeAndComment">
