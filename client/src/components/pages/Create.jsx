@@ -2,8 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import Controls from "../modules/Controls";
 import Display from "../modules/Display";
 import "./Create.css";
+import { useLocation } from "react-router-dom";
+import { get } from "../../utilities";
 
 const Create = () => {
+  const location = useLocation();
+  const fractalId = location.state?.fractalId;
+
   const [drawMode, setDrawMode] = useState("line");
   const [numIters, setNumIters] = useState(1);
   const [treeModuleParallels, setTMPs] = useState([]);
@@ -175,6 +180,25 @@ const Create = () => {
     console.log(total);
     return total;
   };
+
+  // Load existing fractal data if fractalId exists
+  useEffect(() => {
+    if (fractalId) {
+      get("/api/fractal", { _id: fractalId })
+        .then((fractal) => {
+          // Set all the states with the loaded fractal data
+          setDrawMode(fractal.drawMode);
+          setTMPs(fractal.treeModuleParallels);
+          // ... set other states as needed
+
+          // Regenerate the fractal
+          generateFractalLines(null);
+        })
+        .catch((err) => {
+          console.error("Failed to load fractal:", err);
+        });
+    }
+  }, [fractalId]);
 
   return (
     <div className="create-container">

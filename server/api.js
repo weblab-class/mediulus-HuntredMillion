@@ -8,6 +8,8 @@
 */
 
 const express = require("express");
+const fs = require("fs").promises;
+const path = require("path");
 
 // import models so we can interact with the database
 const User = require("./models/user");
@@ -59,10 +61,9 @@ router.get("/Publicposts", async (req, res) => {
   }
 });
 
-
 router.get("/allPosts", async (req, res) => {
   try {
-    const fractals = await Fractal.find({ creator_id: req.query.user });
+    const fractals = await Fractal.find({ creator_id: req.query.userId });
     res.send(fractals);
   } catch (err) {
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
@@ -173,11 +174,11 @@ router.post("/unlike", async (req, res) => {
   }
 });
 
-router.post('/follow', async (req, res) => {
+router.post("/follow", async (req, res) => {
   try {
     const user = await User.findById(req.body.currentUser);
-    const followingUser = await User.findOne({name: req.body.user});
-    
+    const followingUser = await User.findOne({ name: req.body.user });
+
     if (user && followingUser) {
       user.following.push(req.body.user);
       followingUser.followers.push(user.name);
@@ -189,19 +190,19 @@ router.post('/follow', async (req, res) => {
       res.status(404).send({ message: "User not found" });
     }
   } catch (error) {
-    console.log('another error')
+    console.log("another error");
     res.status(500).send({ message: "Server error", error });
   }
 });
 
-router.post('/unfollow', async (req,res) => {
+router.post("/unfollow", async (req, res) => {
   try {
     const nowuser = await User.findById(req.body.currentUser);
-    const unfollowingUser = await User.findOne({name: req.body.user});
+    const unfollowingUser = await User.findOne({ name: req.body.user });
     if (nowuser && unfollowingUser) {
       const index = nowuser.following.indexOf(req.body.user);
       if (index !== -1) {
-        nowuser.following.splice(index,1);
+        nowuser.following.splice(index, 1);
       }
       await nowuser.save();
       res.send(false);
@@ -211,7 +212,6 @@ router.post('/unfollow', async (req,res) => {
         unfollowingUser.followers.splice(index2, 1);
       }
       await unfollowingUser.save();
-
     } else {
       res.status(404).send({ message: "User not found" });
     }
@@ -232,6 +232,81 @@ router.post("/comment", async (req, res) => {
     res.status(200).send(savedComment); // Respond with the saved comment
   } catch (error) {
     res.status(500).send({ error: "Failed to add comment" });
+  }
+});
+
+router.post("/createFractal", async (req, res) => {
+  try {
+    // Read default thumbnail image
+    const defaultThumbnailPath = path.join(
+      __dirname,
+      "public",
+      "../../client/src/components/imgs/thumbnaildefault.png"
+    );
+    const defaultThumbnailBuffer = await fs.readFile(defaultThumbnailPath);
+
+    // Convert buffer to base64 data URL
+    const base64Data = `data:image/png;base64,${defaultThumbnailBuffer.toString("base64")}`;
+
+    // Create new fractal with default values
+    const newFractal = new Fractal({
+      creator_id: req.body.userId,
+      title: "Untitled Fractal",
+      description: "",
+      backgroundColor: "#FFFFFF",
+      drawMode: "line",
+      treeModuleParallels: [],
+      is_public: false,
+      likes: 0,
+      lastUpdated: new Date(),
+      thumbnail: {
+        data: base64Data,
+        contentType: "image/png",
+      },
+    });
+
+    const savedFractal = await newFractal.save();
+
+    // Add fractal to user's fractals array
+    await User.findByIdAndUpdate(req.body.userId, { $push: { fractals: savedFractal._id } });
+
+    res.status(200).send(savedFractal);
+  } catch (err) {
+    console.error("Error creating fractal:", err);
+    res.status(500).send({ error: "Could not create fractal" });
+  }
+});
+
+router.post("/updateFractal", async (req, res) => {
+  try {
+    const fractal = await Fractal.findById(req.body._id);
+    if (!fractal || fractal.creator_id !== req.body.creator_id) {
+      return res.status(403).send({ error: "Not authorized" });
+    }
+
+    // Update the fractal with new values
+    Object.assign(fractal, {
+      ...req.body,
+      lastUpdated: new Date(),
+    });
+
+    const updatedFractal = await fractal.save();
+    res.status(200).send(updatedFractal);
+  } catch (err) {
+    res.status(500).send({ error: "Could not update fractal" });
+  }
+});
+
+router.get("/fractal", async (req, res) => {
+  try {
+    const fractal = await Fractal.findById(req.query._id);
+    if (!fractal) {
+      return res.status(404).send({ error: "Fractal not found" });
+    }
+    res.send(fractal);
+  } catch (err) {
+    console.error("Error fetching fractal:", err);
+    res.status(500).send({ error: "Could not fetch fractal" });
   }
 });
 

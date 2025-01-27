@@ -74,3 +74,55 @@ export const downloadFractal = async ({
     console.error("Error downloading fractal:", error);
   }
 };
+
+export const createThumbnail = async ({ canvas, linesRef, viewState, backgroundColor }) => {
+  try {
+    if (!canvas) return null;
+
+    // Create a low-res canvas (300px width)
+    const thumbnailCanvas = document.createElement("canvas");
+    thumbnailCanvas.width = 150;
+    thumbnailCanvas.height = 150;
+    const ctx = thumbnailCanvas.getContext("2d");
+
+    // Fill background
+    if (backgroundColor) {
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, thumbnailCanvas.width, thumbnailCanvas.height);
+    }
+
+    // Use same coordinate system as main canvas
+    const COORD_SYSTEM_SIZE = 1000;
+    const baseScale = thumbnailCanvas.width / COORD_SYSTEM_SIZE;
+
+    // Center and transform
+    ctx.translate(thumbnailCanvas.width / 2, thumbnailCanvas.height / 2);
+    ctx.translate(viewState.pan.x, viewState.pan.y);
+    ctx.scale(viewState.zoom * baseScale, viewState.zoom * baseScale);
+
+    // Draw all lines
+    const allLines = [
+      ...linesRef.current.initial,
+      ...Object.values(linesRef.current.branches).flat(),
+    ];
+    allLines.forEach((line) => {
+      ctx.beginPath();
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = line.width / viewState.zoom;
+      ctx.moveTo(line.x1, line.y1);
+      ctx.lineTo(line.x2, line.y2);
+      ctx.stroke();
+    });
+
+    // Convert to base64 string
+    const base64Data = thumbnailCanvas.toDataURL("image/png", 0.5);
+
+    return {
+      data: base64Data,
+      contentType: "image/png",
+    };
+  } catch (error) {
+    console.error("Error creating thumbnail:", error);
+    return null;
+  }
+};

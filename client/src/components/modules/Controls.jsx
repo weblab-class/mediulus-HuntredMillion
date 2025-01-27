@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "./Controls.css";
 import {
   Paper,
@@ -20,8 +20,10 @@ import TreeModuleParallel from "./TreeModuleParallel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import DownloadIcon from "@mui/icons-material/Download";
-import { downloadFractal } from "../../utils/exportUtils";
+import { downloadFractal, createThumbnail } from "../../utils/exportUtils";
 import DownloadDialog from "./DownloadDialog";
+import { post } from "../../utilities";
+import { UserContext } from "../App";
 
 const Controls = ({
   drawMode,
@@ -40,11 +42,13 @@ const Controls = ({
   pan,
   viewState,
 }) => {
+  const { userId } = useContext(UserContext);
   const [title, setTitle] = useState("Untitled Fractal");
   const [description, setDescription] = useState("");
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [fractalId, setFractalId] = useState(null);
 
   const handleDrawModeChange = (event) => {
     setDrawMode(event.target.value);
@@ -95,6 +99,64 @@ const Controls = ({
     // When treeModuleParallels changes, regenerate lines
     generateFractalLines(null);
   }, [treeModuleParallels]);
+
+  // Create new fractal only when we have a userId
+  useEffect(() => {
+    if (userId) {
+      post("/api/createFractal", { userId: userId })
+        .then((fractal) => {
+          setFractalId(fractal._id);
+        })
+        .catch((err) => {
+          console.error("Failed to create fractal:", err);
+        });
+    }
+  }, [userId]);
+
+  // Auto-save only when we have both fractalId and userId
+  useEffect(() => {
+    if (!fractalId || !userId) return;
+
+    const updateFractal = async () => {
+      console.log("Saving fractal...", {
+        id: fractalId,
+        title,
+        description,
+        backgroundColor,
+        drawMode,
+        modules: treeModuleParallels.length,
+      });
+
+      const canvas = document.querySelector(".display-canvas");
+      const thumbnail = await createThumbnail({
+        canvas,
+        linesRef,
+        viewState,
+        backgroundColor,
+      });
+
+      post("/api/updateFractal", {
+        _id: fractalId,
+        creator_id: userId,
+        title,
+        description,
+        backgroundColor,
+        drawMode,
+        treeModuleParallels,
+        thumbnail,
+      })
+        .then(() => {
+          console.log("Fractal saved successfully!");
+        })
+        .catch((err) => {
+          console.error("Failed to save fractal:", err);
+        });
+    };
+
+    const saveTimeout = setTimeout(updateFractal, 1000);
+
+    return () => clearTimeout(saveTimeout);
+  }, [fractalId, userId, title, description, backgroundColor, drawMode, treeModuleParallels]);
 
   const handleDownloadClick = () => {
     setDownloadDialogOpen(true);
