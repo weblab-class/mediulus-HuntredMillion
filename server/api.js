@@ -24,6 +24,7 @@ const router = express.Router();
 
 //initialize socket
 const socketManager = require("./server-socket");
+const user = require("./models/user");
 
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
@@ -58,6 +59,57 @@ router.get("/Publicposts", async (req, res) => {
     res.send(fractals);
   } catch (err) {
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
+  }
+});
+
+router.get("/description", async (req, res) => {
+  try {
+    const userId = req.query.user; // Extract user ID from query parameters
+    if (!userId) {
+      return res.status(400).send("User ID is required");
+    }
+
+    const user = await User.findById(userId); // Find the user by ID
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({ description: user.bio }); // Send the bio in JSON format
+  } catch (err) {
+    res.status(500).send("Failed to fetch user description: " + err.message);
+  }
+});
+
+router.post("/changeBio", async (req, res) => {
+  try {
+    const userId = req.body.user; // Extract the user ID from the request body
+    const newBio = req.body.bio; // Extract the new bio from the request body
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+    if (typeof newBio !== "string") {
+      return res.status(400).json({ error: "Invalid bio format. Bio must be a string." });
+    }
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update the user's bio
+    user.bio = newBio;
+
+    // Save the changes to the database
+    await user.save();
+
+    // Respond with the updated bio
+    res.status(200).json({ description: user.bio });
+  } catch (err) {
+    // Handle any errors
+    res.status(500).json({ error: "Failed to update user bio: " + err.message });
   }
 });
 
@@ -190,7 +242,6 @@ router.post("/follow", async (req, res) => {
       res.status(404).send({ message: "User not found" });
     }
   } catch (error) {
-    console.log("another error");
     res.status(500).send({ message: "Server error", error });
   }
 });
@@ -307,6 +358,31 @@ router.get("/fractal", async (req, res) => {
   } catch (err) {
     console.error("Error fetching fractal:", err);
     res.status(500).send({ error: "Could not fetch fractal" });
+  }
+});
+
+router.get("/findFollowing", async (req, res) => {
+  try {
+    const user = await User.findById(req.query.user);
+
+    if (user) {
+      const followingUsers = user.following;
+      res.send(followingUsers);
+    }
+  } catch (error) {
+    res.status(500).send({ error: "Failed to find followers" });
+  }
+});
+
+router.get("/findFollowers", async (req, res) => {
+  try {
+    const user = await User.findById(req.query.user);
+    if (user) {
+      const followerUsers = user.followers;
+      res.send(followerUsers);
+    }
+  } catch (error) {
+    res.status(500).send({ error: "Failed to find followers" });
   }
 });
 

@@ -4,31 +4,27 @@ import Post from "../modules/Post.jsx";
 import { get } from "../../utilities";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import IconButton from "@mui/material/IconButton";
-import { UserContext } from "../App.jsx"
-import SearchIcon from '@mui/icons-material/Search';
+import { UserContext } from "../App.jsx";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Feed = (props) => {
   /* State for posts */
   const [posts, setPosts] = useState([]);
   const { userId } = useContext(UserContext);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
 
-  useEffect (() => {
-    
+  useEffect(() => {
     if (userId) {
-      console.log('Fetching username for userId:', userId);
       get("/api/UserName", { user_id: userId })
         .then((user) => {
-          
-          console.log("Here is the userName:", user);
           setUserName(user.name); // Update state with the username
         })
         .catch((err) => {
           console.error("Error fetching username:", err);
         });
     }
-  }, [userId])
-  
+  }, [userId]);
+
   /* Fetch posts when the component mounts */
   useEffect(() => {
     document.title = "Post Feed";
@@ -36,7 +32,6 @@ const Feed = (props) => {
     // Fetch posts
     get("/api/Publicposts")
       .then((postObjs) => {
-        console.log("PostObjs:", postObjs);
         if (postObjs && postObjs.length) {
           let reversedpostObjs = postObjs.reverse();
           setPosts(reversedpostObjs);
@@ -50,7 +45,6 @@ const Feed = (props) => {
       });
   }, []);
 
-
   let postsEven = posts.filter((_, index) => index % 2 === 0);
   let postsOdd = posts.filter((_, index) => index % 2 !== 0);
 
@@ -60,10 +54,10 @@ const Feed = (props) => {
       _id={postObj._id}
       creator_id={postObj.creator_id}
       img_url={postObj.img_url}
-      is_public = {postObj.is_public}
+      is_public={postObj.is_public}
       likes={postObj.likes}
       userId={userId}
-      userName = {userName}
+      userName={userName}
       description={postObj.description}
     />
   ));
@@ -74,20 +68,19 @@ const Feed = (props) => {
       _id={postObj._id}
       creator_id={postObj.creator_id}
       img_url={postObj.img_url}
-      is_public = {postObj.is_public}
+      is_public={postObj.is_public}
       likes={postObj.likes}
       userId={userId}
-      userName = {userName}
+      userName={userName}
       description={postObj.description}
     />
   ));
-
 
   /* State for toggling the custom display */
   const [showCustomDisplay, setShowCustomDisplay] = useState(false);
 
   const toggleCustomDisplay = () => {
-    console.log("Toggling showCustomDisplay");
+    ("Toggling showCustomDisplay");
     setShowCustomDisplay(!showCustomDisplay);
   };
 
@@ -97,35 +90,32 @@ const Feed = (props) => {
 
   const [search, setSearch] = useState(false);
 
-  console.log("search:", search)
   const toggleSearch = () => {
     setSearch(!search);
-  }
+  };
   return (
     <div className="Container">
       <div className="Buttons">
-
         <div className="Filter">
-        <button className="CustomFeedButton" onClick={toggleCustomDisplay}>
-          Customize Feed
-        </button>
+          <button className="CustomFeedButton" onClick={toggleCustomDisplay}>
+            Customize Feed
+          </button>
 
-        <div className={`CustomDisplayButton ${showCustomDisplay ? "visible" : ""}`}>
-          <IconButton className = 'MinusButton' onClick={hideCustomDisplay}>
-            <RemoveCircleOutlineIcon strokeWidth= '0.1' fontSize="50px" />
-          </IconButton>
+          <div className={`CustomDisplayButton ${showCustomDisplay ? "visible" : ""}`}>
+            <IconButton className="MinusButton" onClick={hideCustomDisplay}>
+              <RemoveCircleOutlineIcon strokeWidth="0.1" fontSize="50px" />
+            </IconButton>
 
-          <div className="DisplayButton">
-            <p onClick={hideCustomDisplay}>Trending</p>
-            <p onClick={hideCustomDisplay}>Following</p>
+            <div className="DisplayButton">
+              <p onClick={hideCustomDisplay}>Trending</p>
+              <p onClick={hideCustomDisplay}>Following</p>
+            </div>
           </div>
         </div>
-
-        </div>
-        <div className = 'Search'>
-          <textarea placeholder = 'Find Friends'></textarea>
-          <IconButton onClick = {toggleSearch}>
-            <SearchIcon className = 'SearchButton'/>
+        <div className="Search">
+          <textarea placeholder="Find Friends"></textarea>
+          <IconButton onClick={toggleSearch}>
+            <SearchIcon className="SearchButton" />
           </IconButton>
         </div>
       </div>
@@ -133,8 +123,6 @@ const Feed = (props) => {
         <div className="postGallery1">{postsListEven}</div>
         <div className="postGallery2">{postsListOdd}</div>
       </div>
-
-      
     </div>
   );
 };
