@@ -131,13 +131,27 @@ router.get("/allPosts", async (req, res) => {
 });
 
 router.get("/UserPosts", async (req, res) => {
+  console.log("Fetching user posts for user:", req.query.user);
+
   try {
-    const fractals = await Fractal.find({ creator_id: req.query.user });
+    const userId = req.query.user;
+
+    // Validate the user ID
+    if (!userId) {
+      return res.status(400).send({ error: "User ID is required" });
+    }
+
+    // Fetch fractals created by the user
+    const fractals = await Fractal.find({ creator_id: userId });
+
+    // Send the fractals back to the client
     res.send(fractals);
   } catch (err) {
+    console.error("Error fetching fractals:", err);
     res.status(500).send({ error: "Failed to fetch fractals: " + err.message });
   }
 });
+
 
 router.get("/comment", async (req, res) => {
   try {
@@ -180,6 +194,30 @@ router.get("/isLiked", async (req, res) => {
     } else {
       res.send(false);
     }
+  }
+});
+
+router.get('/ProfileId', async (req, res) => {
+  try {
+    // Ensure the query parameter exists
+    const { user_name } = req.query;
+    if (!user_name) {
+      return res.status(400).send({ error: "user_name query parameter is required" });
+    }
+
+    // Find the user by name
+    const user = await User.findOne({ name: user_name });
+
+    // If no user is found, return a 404 response
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    // Send the user's ID
+    res.send({ profileId: user._id });
+  } catch (err) {
+    console.error("Error fetching profile ID:", err);
+    res.status(500).send({ error: "An internal server error occurred" });
   }
 });
 

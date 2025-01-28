@@ -1,0 +1,20 @@
+.postContainer {
+    display: flex;
+    justify-content: center;
+}
+
+.postSide {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.FollowButton {
+    border: 1px solid #37ABFF;
+    background-color: rgba(0, 0, 0, 0.25);
+    color: white;
+    font-family: 'Raleway';
+    padding:10px;
+    border-radius: 34778px;
+}
