@@ -1,7 +1,7 @@
 import "./Account.css";
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../App.jsx";
-import { get, post } from "../../utilities"; // Import both get and post
+import { get, post } from "../../utilities";
 import Post from "../modules/Post.jsx";
 import Following from "../modules/Following.jsx";
 import Followers from "../modules/Followers.jsx";
@@ -29,7 +29,6 @@ const Account = (props) => {
   }, [userId]);
 
   // Fetch posts
-  console.log("user id:", userId);
   useEffect(() => {
     if (userId) {
       get("/api/allPosts", { userId: userId })
@@ -59,9 +58,8 @@ const Account = (props) => {
     get("/api/description", { user: userId })
       .then((res) => {
         if (res && res.description) {
-          setDescription(res.description); // Ensure the description is extracted properly
+          setDescription(res.description);
         } else {
-          console.error("Invalid response format:", res);
           setDescription("No description available.");
         }
       })
@@ -77,9 +75,7 @@ const Account = (props) => {
       post("/api/changeBio", { user: userId, bio: newDescription })
         .then((response) => {
           if (response && response.description) {
-            setDescription(response.description); // Update bio in the frontend
-          } else {
-            console.error("Invalid response format:", response);
+            setDescription(response.description);
           }
         })
         .catch((err) => console.error("Error updating bio:", err));
@@ -97,16 +93,41 @@ const Account = (props) => {
     setPopUp(false);
   };
 
-  // Render posts
-  const postsList = posts.map((postObj) => (
-    <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName} />
-  ));
-  const PrivatePostsList = privatePosts.map((postObj) => (
-    <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName} />
-  ));
-  const PublicPostsList = publicPosts.map((postObj) => (
-    <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName} />
-  ));
+  // Function to split posts into even and odd lists
+  const splitPosts = (postsList) => {
+    let postsEven = postsList.filter((_, index) => index % 2 === 0);
+    let postsOdd = postsList.filter((_, index) => index % 2 !== 0);
+
+    let postsListEven = postsEven.map((postObj) => (
+      <Post
+        key={`Card_${postObj._id}`}
+        {...postObj}
+        userId={userId}
+        userName={userName}
+      />
+    ));
+
+    let postsListOdd = postsOdd.map((postObj) => (
+      <Post
+        key={`Card_${postObj._id}`}
+        {...postObj}
+        userId={userId}
+        userName={userName}
+      />
+    ));
+
+    return [postsListEven, postsListOdd];
+  };
+
+  // Dynamically determine posts to display based on `postType`
+  let DisplayedPosts = [];
+  if (postType === "all") {
+    DisplayedPosts = splitPosts(posts);
+  } else if (postType === "private") {
+    DisplayedPosts = splitPosts(privatePosts);
+  } else if (postType === "public") {
+    DisplayedPosts = splitPosts(publicPosts);
+  }
 
   return (
     <div className="Account">
@@ -127,31 +148,39 @@ const Account = (props) => {
             <button onClick={() => togglePopUp("followers")}>Followers</button>
             <button onClick={() => togglePopUp("following")}>Following</button>
             <button onClick={() => setPostType("all")}>Fractals</button>
-            <button onClick={() => setPostType("private")}>Private Fractals</button>
-            <button onClick={() => setPostType("public")}>Public Fractals</button>
+            <button onClick={() => setPostType("private")}>
+              Private Fractals
+            </button>
+            <button onClick={() => setPostType("public")}>
+              Public Fractals
+            </button>
           </div>
           <div className="UserBio">
-            {editing ? (
-              <textarea
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                placeholder="Write something about yourself..."
-              ></textarea>
-            ) : (
-              <p>{description || "No bio available."}</p>
-            )}
+          {editing ? (
+            <textarea
+              className="custom-bio"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              onInput={(e) => {
+                e.target.style.height = "auto"; // Reset height to calculate the full height
+                e.target.style.height = `${e.target.scrollHeight}px`; // Set height based on content
+              }}
+              placeholder="Write something about yourself..."
+            ></textarea>
+          ) : (
+            <p className = 'bio'>{description || "No bio available."}</p>
+          )}
           </div>
         </div>
       </div>
       <div className="UserSelectedFractals">
-        {postType === "all" && postsList}
-        {postType === "private" && PrivatePostsList}
-        {postType === "public" && PublicPostsList}
+        <div className = 'FractalSide'>{DisplayedPosts[0]}</div>
+        <div className = 'FractalSide'>{DisplayedPosts[1]}</div>
       </div>
       {popUp && (
         <div className="Overlay" onClick={closePopUp}>
           <div className="FollowPopUp" onClick={(e) => e.stopPropagation()}>
-            <div className = 'Exit'>
+            <div className="Exit">
               <button onClick={closePopUp}>Exit</button>
             </div>
             {popUpType === "following" && <Following />}

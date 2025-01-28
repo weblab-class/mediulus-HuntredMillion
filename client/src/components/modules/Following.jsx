@@ -6,7 +6,6 @@ import { get } from "../../utilities";
 
 const Following = () => {
     const { userId } = useContext(UserContext);
-    console.log('found userID', userId);
     const [followingList, setFollowingList] = useState([]);
 
     useEffect(() => {
