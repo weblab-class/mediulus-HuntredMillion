@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
  * @param {String} user_name The name of the user who created the comment.
  */
 const UserName = (props) => {
-  console.log('inside username', props.user_name);
     const navigate = useNavigate();
 
     const goToProfile = (username) => {

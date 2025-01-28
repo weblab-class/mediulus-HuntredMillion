@@ -10,8 +10,6 @@ import UserTextBlock from "./UserTextBlock.jsx";
  * @param {String} content The text content of the comment.
  */
 const Comment = (props) => {
-  ("inside comment");
-  console.log("this is the content: ", props.content);
   return (
     <div className="CommentContainer">
       <UserTextBlock user_name={props.creator_name} content={props.content} />

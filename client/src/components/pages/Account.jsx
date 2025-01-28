@@ -117,7 +117,7 @@ const Account = (props) => {
               <img src="/imgs/osu.jpeg" alt="user profile pic" />
             </div>
             <div className="UserNameAndEdit">
-              <p>{userName}</p>
+              <p className="userName">{userName}</p>
               <button className="editing" onClick={toggleEditing}>
                 {editing ? "Save" : "Edit Profile"}
               </button>
@@ -151,7 +151,9 @@ const Account = (props) => {
       {popUp && (
         <div className="Overlay" onClick={closePopUp}>
           <div className="FollowPopUp" onClick={(e) => e.stopPropagation()}>
-            <button onClick={closePopUp}>Exit</button>
+            <div className = 'Exit'>
+              <button onClick={closePopUp}>Exit</button>
+            </div>
             {popUpType === "following" && <Following />}
             {popUpType === "followers" && <Followers />}
           </div>

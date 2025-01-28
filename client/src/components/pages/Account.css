@@ -9,6 +9,10 @@
     font-family: 'Raleway';
     color:white;
 }
+
+.userName {
+    margin-right:25px;
+}
 .TopSection {
     display: flex;
     color: white;
@@ -90,9 +94,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark overlay */
-    z-index: 999; /* Ensure it’s behind the popup */
+    background-color: rgba(0, 0, 0, 0.6); 
+    z-index: 999; 
 }
+
+
 
 .FollowPopUp {
     position: fixed; /* Fixed to the viewport */
@@ -100,7 +106,6 @@
     left: 50%;
     transform: translate(-50%, -50%); /* Center the popup */
     z-index: 1000; /* Overlay above the background */
-    background-color: rgba(0, 0, 0, 0.9); /* Popup background */
     padding: 20px;
     border-radius: 10px;
     color: white;
@@ -111,6 +116,26 @@
     overflow-y: auto;
 }
 
+.Exit {
+    margin: 5px;
+    display: flex;
+    justify-content: right;
+}
+
+.Exit button {
+    font-size: 20px;
+    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.658);
+    border: 1px solid white;
+    border-radius: 10px;
+    color: white;
+    padding: 5px 15px;
+}
+
+
+.Exit button:hover {
+    background-color: #37ABFF;
+}
 .editing {
     border: 1px solid #37ABFF;
     background-color: rgba(0, 0, 0, 0.25);
@@ -124,6 +149,9 @@
     color:#37ABFF;
 }
 
+.textarea {
+    height:fit-content ;
+}
 @media (max-width: 700px) {
     .TopSection {
         display: flex;

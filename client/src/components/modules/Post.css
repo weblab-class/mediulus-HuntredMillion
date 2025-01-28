@@ -1,14 +1,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
 
+.img {
+  width: 100%;
+  
+}
 .PostContainer {
     margin: 20px;
     border: 1px solid white;
     padding: 10px;
-    max-height: 300px;
+    max-height: 800px;
+    min-height: 700px;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.4);
 }
 
+.Post-image img {
+  width:100%;
+  height: auto;
+}
 /* Style the scrollbar */
 .PostContainer::-webkit-scrollbar {
     width: 5px; /* Width of the scrollbar */

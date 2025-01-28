@@ -151,9 +151,16 @@ router.get("/comment", async (req, res) => {
 });
 
 router.get("/UserName", async (req, res) => {
-  User.findById(req.query.user_id).then((user) => {
+  try {
+    const user = await User.findById(req.query.user_id);
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
     res.send(user);
-  });
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    res.status(500).send({ error: "An error occurred while fetching the user" });
+  }
 });
 
 router.get("/isLiked", async (req, res) => {

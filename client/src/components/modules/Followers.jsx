@@ -37,7 +37,9 @@ const Followers = () => {
     console.log(FollowerNames)
     return (
       <div className="Follow">
-        {FollowerNames}
+        <div className="names">
+          {FollowerNames}
+        </div>
       </div>
     );
   };

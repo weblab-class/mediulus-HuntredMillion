@@ -43,16 +43,7 @@ const UserAccount = (props) => {
 
   let postsList = posts.map((postObj) => (
     <Post
-      key={`Card_${postObj._id}`}
-      _id={postObj._id}
-      creator_id={postObj.creator_id}
-      img_url={postObj.img_url}
-      likes={postObj.likes}
-      is_public={postObj.is_public}
-      userId={userId}
-      userName={currentUserName}
-      description={postObj.description}
-    />
+    key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={currentUserName}/>
   ));
 
   const [following, setFollowing] = useState(false);

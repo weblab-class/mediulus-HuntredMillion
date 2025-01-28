@@ -20,6 +20,7 @@ const TreeModuleParallelsSchema = new mongoose.Schema({
 
 //define a comment schema for the database
 const FractalSchema = new mongoose.Schema({
+  creator_name: String,
   creator_id: String,
   // img_url: String,
   thumbnail: {

@@ -9,6 +9,7 @@ import './UserTextBlock.css'
  * @param {String} content The content of the write
  */
 const UserTextBlock = (props) => {
+    console.log('userName', props.user_name)
     return (
       <div className="UserTextBlock">
         <UserName user_name = {props.user_name}/>

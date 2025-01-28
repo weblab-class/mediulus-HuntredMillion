@@ -50,29 +50,13 @@ const Feed = (props) => {
 
   let postsListEven = postsEven.map((postObj) => (
     <Post
-      key={`Card_${postObj._id}`}
-      _id={postObj._id}
-      creator_id={postObj.creator_id}
-      img_url={postObj.img_url}
-      is_public={postObj.is_public}
-      likes={postObj.likes}
-      userId={userId}
-      userName={userName}
-      description={postObj.description}
+    key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName}
     />
   ));
 
   let postsListOdd = postsOdd.map((postObj) => (
     <Post
-      key={`Card_${postObj._id}`}
-      _id={postObj._id}
-      creator_id={postObj.creator_id}
-      img_url={postObj.img_url}
-      is_public={postObj.is_public}
-      likes={postObj.likes}
-      userId={userId}
-      userName={userName}
-      description={postObj.description}
+      key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName}
     />
   ));
 

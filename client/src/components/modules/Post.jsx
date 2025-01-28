@@ -11,6 +11,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Post = (props) => {
+
+  console.log("here are the props", props)
   /**
    * A single comment on a fractal post.
    *
@@ -24,6 +26,17 @@ const Post = (props) => {
    * @param {Boolean} is_public
    * @param {String} creator_name
    */
+
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+      if (props.creator_id) {
+        get("/api/UserName", { user_id: props.creator_id })
+          .then((user) => setUserName(user.name))
+          .catch((err) => console.error("Error fetching username:", err));
+      }
+    }, [props.creator_id]);
+
   ///////////////////////////////
   //Things to do with comments//
   ///////////////////////////////
@@ -143,7 +156,8 @@ const Post = (props) => {
             </div>
 
             <div className="ContentContainer">
-              <UserTextBlock user_name={props.creator_name} content={props.description} />
+              {console.log(props.creator_name)}
+              <UserTextBlock user_name={userName} content={props.description} />
 
               {props.is_public && ( // Conditionally render LikeAndComment only if is_public is true
                 <div className="LikeAndComment">
@@ -174,7 +188,7 @@ const Post = (props) => {
               className="CommentsView"
             >
               <div className="FractalCreater">
-                <UserTextBlock user_name={props.creator_id} content={props.description} />
+                <UserTextBlock user_name={userName} content={props.description} />
                 <div className="ExitContainer">
                   <button className="ExitButton" onClick={toggleComments}>
                     Exit
@@ -182,9 +196,6 @@ const Post = (props) => {
                 </div>
               </div>
               <hr />
-              {/* Scrollable comments area */}
-              <div className="CommentsList">{commentsList}</div>
-              {/* Add comment area always visible */}
               <div className="AddCommentContainer">
                 <textarea
                   value={newComment}
@@ -195,6 +206,9 @@ const Post = (props) => {
                   Submit
                 </button>
               </div>
+              {/* Scrollable comments area */}
+              <div className="CommentsList">{commentsList.reverse()}</div>
+              {/* Add comment area always visible */}
             </motion.div>
           </div>
         )}
