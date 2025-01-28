@@ -34,6 +34,8 @@ const auth = require("./auth");
 // socket stuff
 const socketManager = require("./server-socket");
 
+const { initGridFS } = require("./utils/gridfs");
+
 // Server configuration below
 // TODO change connection URL after setting up your team database
 const mongoConnectionURL = process.env.MONGO_SRV;
@@ -51,15 +53,27 @@ mongoose
     useUnifiedTopology: true,
     dbName: databaseName,
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log(`Error connecting to MongoDB: ${err}`));
+  .then((mongoose) => {
+    console.log("16. MongoDB connected, database:", mongoose.connection.db.databaseName);
+    console.log("17. Initializing GridFS...");
+    initGridFS(mongoose.connection.db);
+    console.log("18. GridFS initialization complete");
+  })
+  .catch((err) => {
+    console.error("19. MongoDB connection error:", {
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  });
 
 // create a new express server
 const app = express();
 app.use(validator.checkRoutes);
 
 // allow us to process POST requests
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // set up a session, which will persist login data across requests
 app.use(

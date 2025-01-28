@@ -29,8 +29,10 @@ import { useLocation } from "react-router-dom";
 const Controls = ({
   drawMode,
   setDrawMode,
-  numIters,
-  setNumIters,
+  // numIters,
+  // setNumIters,
+  backgroundColor,
+  setBackgroundColor,
   initWidth,
   setInitWidth,
   treeModuleParallels,
@@ -46,15 +48,17 @@ const Controls = ({
   const location = useLocation();
   const existingFractalId = location.state?.fractalId;
   const { userId } = useContext(UserContext);
-  const [title, setTitle] = useState("Untitled Fractal");
+  // const [title, setTitle] = useState("Untitled Fractal");
   const [description, setDescription] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [fractalId, setFractalId] = useState(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const handleDrawModeChange = (event) => {
     setDrawMode(event.target.value);
+    if (!isInitialLoad) setHasChanges(true);
   };
 
   const handleAddTMP = () => {
@@ -91,10 +95,12 @@ const Controls = ({
         treeModules: [defaultTreeModule],
       },
     ]);
+    if (!isInitialLoad) setHasChanges(true);
   };
 
   const handleDeleteTMP = (id) => {
     setTMPs(treeModuleParallels.filter((branch) => branch.id !== id));
+    if (!isInitialLoad) setHasChanges(true);
   };
 
   // Add useEffect to watch for treeModuleParallels changes
@@ -103,28 +109,30 @@ const Controls = ({
     generateFractalLines(null);
   }, [treeModuleParallels]);
 
-  // Load existing fractal data if fractalId exists
+  // Load existing fractal data
   useEffect(() => {
     if (existingFractalId) {
       setFractalId(existingFractalId);
-      // Load the fractal data
       get("/api/fractal", { _id: existingFractalId })
         .then((fractal) => {
-          setTitle(fractal.title);
           setDescription(fractal.description);
           setBackgroundColor(fractal.backgroundColor);
           setDrawMode(fractal.drawMode);
           setTMPs(fractal.treeModuleParallels);
+          setIsInitialLoad(false);
         })
         .catch((err) => {
           console.error("Failed to load fractal:", err);
+          setIsInitialLoad(false);
         });
+    } else {
+      setIsInitialLoad(false);
     }
   }, [existingFractalId]);
 
-  // Create new fractal only when we have a userId AND no existing fractalId
+  // Modify the fractal creation effect to only trigger on first change
   useEffect(() => {
-    if (userId && !existingFractalId) {
+    if (userId && !existingFractalId && hasChanges && !fractalId) {
       post("/api/createFractal", { userId: userId })
         .then((fractal) => {
           setFractalId(fractal._id);
@@ -133,16 +141,21 @@ const Controls = ({
           console.error("Failed to create fractal:", err);
         });
     }
-  }, [userId, existingFractalId]);
+  }, [userId, existingFractalId, hasChanges]); // Add hasChanges as dependency
 
   // Auto-save only when we have both fractalId and userId
   useEffect(() => {
-    if (!fractalId || !userId) return;
+    console.log("Auto-save effect triggered. HasChanges:", hasChanges);
+    if (!fractalId || !userId || !hasChanges) {
+      console.log("Skipping save because:", { fractalId, userId, hasChanges });
+      return;
+    }
 
     const updateFractal = async () => {
+      console.log("Starting fractal save...");
       console.log("Saving fractal...", {
         id: fractalId,
-        title,
+        // title,
         description,
         backgroundColor,
         drawMode,
@@ -155,30 +168,47 @@ const Controls = ({
         linesRef,
         viewState,
         backgroundColor,
+        drawMode,
       });
 
-      post("/api/updateFractal", {
-        _id: fractalId,
-        creator_id: userId,
-        title,
-        description,
-        backgroundColor,
-        drawMode,
-        treeModuleParallels,
-        thumbnail,
-      })
-        .then(() => {
-          console.log("Fractal saved successfully!");
-        })
-        .catch((err) => {
-          console.error("Failed to save fractal:", err);
+      try {
+        // First update the thumbnail
+        if (thumbnail) {
+          const formData = new FormData();
+          formData.append("thumbnail", thumbnail.blob);
+
+          await fetch(`/api/fractal/${fractalId}/thumbnail`, {
+            method: "POST",
+            body: formData,
+          });
+        }
+
+        // Then update the rest of the fractal data
+        const response = await post("/api/updateFractal", {
+          _id: fractalId,
+          creator_id: userId,
+          // title,
+          description,
+          backgroundColor,
+          drawMode,
+          treeModuleParallels,
         });
+
+        if (!response._id) {
+          throw new Error("Failed to update fractal");
+        }
+
+        console.log("Fractal saved successfully!");
+        setHasChanges(false);
+      } catch (error) {
+        console.error("Error updating fractal:", error);
+      }
     };
 
     const saveTimeout = setTimeout(updateFractal, 1000);
 
     return () => clearTimeout(saveTimeout);
-  }, [fractalId, userId, title, description, backgroundColor, drawMode, treeModuleParallels]);
+  }, [fractalId, userId, description, backgroundColor, drawMode, treeModuleParallels, hasChanges]); //title,
 
   const handleDownloadClick = () => {
     setDownloadDialogOpen(true);
@@ -191,7 +221,7 @@ const Controls = ({
       linesRef,
       viewState,
       backgroundColor: options.includeBackground ? backgroundColor : null,
-      title,
+      // title,
       scale: options.scale,
     });
   };
@@ -227,7 +257,7 @@ const Controls = ({
 
         {isSettingsExpanded && (
           <div className="controls-section-content">
-            <TextField
+            {/* <TextField
               fullWidth
               label="Title"
               variant="outlined"
@@ -235,7 +265,7 @@ const Controls = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               margin="normal"
-            />
+            /> */}
 
             <TextField
               fullWidth
@@ -243,32 +273,49 @@ const Controls = ({
               variant="outlined"
               size="small"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (!isInitialLoad) setHasChanges(true);
+              }}
               multiline
               rows={3}
               margin="normal"
             />
 
-            <FormControl fullWidth margin="normal">
-              <FormLabel>Background Color</FormLabel>
-              <div className="controls-color-picker">
-                <input
-                  type="color"
-                  value={backgroundColor}
-                  onChange={(e) => setBackgroundColor(e.target.value)}
-                  className="controls-color-input"
-                />
-                <Typography variant="body2">{backgroundColor}</Typography>
-              </div>
-            </FormControl>
+            <div className="controls-horizontal-group">
+              <FormControl fullWidth>
+                <FormLabel>Background Color</FormLabel>
+                <div className="controls-color-picker">
+                  <input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => {
+                      setBackgroundColor(e.target.value);
+                      if (!isInitialLoad) setHasChanges(true);
+                    }}
+                    className="controls-color-input"
+                  />
+                  {/* <Typography variant="button">{backgroundColor}</Typography> */}
+                  <span className="global-settings-color-value">{backgroundColor}</span>
+                </div>
+              </FormControl>
 
-            <FormControl component="fieldset" margin="normal">
-              <FormLabel component="legend">Start With</FormLabel>
-              <RadioGroup row value={drawMode} onChange={handleDrawModeChange}>
-                <FormControlLabel value="line" control={<Radio size="small" />} label="Line" />
-                <FormControlLabel value="point" control={<Radio size="small" />} label="Point" />
-              </RadioGroup>
-            </FormControl>
+              <FormControl fullWidth>
+                <FormLabel>Start With</FormLabel>
+                <RadioGroup
+                  row
+                  value={drawMode}
+                  onChange={(e) => {
+                    handleDrawModeChange(e);
+                    console.log("isInitialLoad", isInitialLoad);
+                    if (!isInitialLoad) setHasChanges(true);
+                  }}
+                >
+                  <FormControlLabel value="line" control={<Radio size="small" />} label="Line" />
+                  <FormControlLabel value="point" control={<Radio size="small" />} label="Point" />
+                </RadioGroup>
+              </FormControl>
+            </div>
           </div>
         )}
       </div>
@@ -276,7 +323,7 @@ const Controls = ({
       <Divider />
 
       <div className="controls-module-header">
-        <Typography>Branches: {treeModuleParallels.length}</Typography>
+        <Typography variant="h6">Branches: {treeModuleParallels.length}</Typography>
         <IconButton onClick={handleAddTMP} className="controls-add-button">
           <AddIcon />
         </IconButton>

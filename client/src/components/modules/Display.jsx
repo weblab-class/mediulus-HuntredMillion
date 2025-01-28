@@ -5,13 +5,15 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import HomeIcon from "@mui/icons-material/Home";
 
-const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
+const Display = ({ lines, drawMode, startPoint, backgroundColor = "#FFFFFF" }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const canvasRef = useRef(null);
+
+  const COORD_SYSTEM_SIZE = 1000;
 
   // Add resize listener
   useEffect(() => {
@@ -35,11 +37,6 @@ const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Add effect to notify parent of view changes
-  useEffect(() => {
-    onViewChange?.({ zoom, pan });
-  }, [zoom, pan, onViewChange]);
-
   // Drawing effect
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,10 +47,11 @@ const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
     canvas.height = dimensions.height;
 
     const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Use a fixed coordinate system size
-    const COORD_SYSTEM_SIZE = 1000;
+    // Clear with background color
+    console.log(backgroundColor);
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Calculate center of canvas
     const centerX = canvas.width / 2;
@@ -92,11 +90,29 @@ const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
     });
 
     ctx.restore();
-  }, [zoom, pan, lines, dimensions, drawMode, startPoint]);
+  }, [zoom, pan, lines, dimensions, drawMode, startPoint, backgroundColor]);
 
   const handleZoom = (delta) => {
     setZoom((prevZoom) => {
       const newZoom = prevZoom * Math.exp(delta);
+      const zoomFactor = newZoom / prevZoom;
+
+      // Calculate the scale based on the smallest dimension
+      const scaleX = dimensions.width / COORD_SYSTEM_SIZE;
+      const scaleY = dimensions.height / COORD_SYSTEM_SIZE;
+      const scale = Math.min(scaleX, scaleY);
+
+      // Calculate the center point in our coordinate system
+      const centerX = -pan.x / (scale * prevZoom);
+      const centerY = -pan.y / (scale * prevZoom);
+
+      // Calculate new pan position to keep the center point fixed
+      const newPan = {
+        x: -centerX * scale * newZoom,
+        y: -centerY * scale * newZoom,
+      };
+
+      setPan(newPan);
       return Math.max(newZoom, 0.1);
     });
   };
@@ -126,6 +142,21 @@ const Display = ({ lines, drawMode, startPoint, onViewChange }) => {
     setPan({ x: 0, y: 0 });
     setZoom(1);
   };
+
+  // Drawing effect remains the same, but let's add wheel zoom support
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || dimensions.width === 0) return;
+
+    const handleWheel = (e) => {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.001;
+      handleZoom(delta);
+    };
+
+    canvas.addEventListener("wheel", handleWheel);
+    return () => canvas.removeEventListener("wheel", handleWheel);
+  }, [dimensions]);
 
   return (
     <Paper elevation={3} className="display-container">

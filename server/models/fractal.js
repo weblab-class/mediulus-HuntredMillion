@@ -22,9 +22,8 @@ const TreeModuleParallelsSchema = new mongoose.Schema({
 const FractalSchema = new mongoose.Schema({
   creator_name: String,
   creator_id: String,
-  // img_url: String,
   thumbnail: {
-    data: String,
+    fileId: { type: mongoose.Schema.Types.ObjectId }, // Reference to GridFS file
     contentType: String,
   },
   is_public: Boolean,

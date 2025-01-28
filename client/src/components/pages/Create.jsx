@@ -8,14 +8,14 @@ import { get } from "../../utilities";
 const Create = () => {
   const location = useLocation();
   const fractalId = location.state?.fractalId;
-
   const [drawMode, setDrawMode] = useState("line");
-  const [numIters, setNumIters] = useState(1);
+  // const [numIters, setNumIters] = useState(1);
   const [treeModuleParallels, setTMPs] = useState([]);
   const [renderTrigger, setRenderTrigger] = useState(0);
   const [viewState, setViewState] = useState({ zoom: 1, pan: { x: 0, y: 0 } });
+  const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
 
-  const generateInitialLine = () => {
+  const generateInitialLine = (initialWidth = 1) => {
     const initialLength = 250;
     return [
       {
@@ -24,7 +24,7 @@ const Create = () => {
         x2: 0,
         y2: 0,
         generation: 0,
-        width: 1,
+        width: initialWidth,
         color: "#000000",
       },
     ];
@@ -46,7 +46,9 @@ const Create = () => {
 
       // Generate lines for each branch
       treeModuleParallels.forEach((branch) => {
-        newLines.branches[branch.id] = generateBranchLines(branch, newLines.initial);
+        // Pass the branch's initial width to generateInitialLine
+        const branchInitialLines = generateInitialLine(branch.initWidth);
+        newLines.branches[branch.id] = generateBranchLines(branch, branchInitialLines);
       });
 
       // Store in ref instead of state
@@ -60,11 +62,12 @@ const Create = () => {
     if (!updatedBranch) return;
 
     // Generate new lines and update just that branch
+    const branchInitialLines = generateInitialLine(updatedBranch.initWidth);
     linesRef.current = {
       ...linesRef.current,
       branches: {
         ...linesRef.current.branches,
-        [branchId]: generateBranchLines(updatedBranch, linesRef.current.initial),
+        [branchId]: generateBranchLines(updatedBranch, branchInitialLines),
       },
     };
 
@@ -74,8 +77,8 @@ const Create = () => {
 
   const generateBranchLines = (branch, initialLines) => {
     const branchLines = [];
-    const initialLength = 250;
-    const initialWidth = branch.initWidth;
+    // const initialLength = 250;
+    // const initialWidth = branch.initWidth;
     let currentGenLines = initialLines;
     const BATCH_SIZE = 1000;
 
@@ -87,7 +90,11 @@ const Create = () => {
       currentGenLines.forEach((parentLine) => {
         const baseAngle = Math.atan2(parentLine.y2 - parentLine.y1, parentLine.x2 - parentLine.x1);
 
-        const newLength = initialLength * Math.pow(module.decay, iter + 1);
+        // Calculate length based on parent line length instead of initial length
+        const parentLength = Math.sqrt(
+          Math.pow(parentLine.x2 - parentLine.x1, 2) + Math.pow(parentLine.y2 - parentLine.y1, 2)
+        );
+        const newLength = parentLength * module.decay;
         const newWidth = (parentLine.width || initialWidth) * module.widthDecay;
 
         for (let i = 0; i < module.numLines; i++) {
@@ -213,14 +220,13 @@ const Create = () => {
             drawMode={drawMode}
             startPoint={drawMode === "point" ? { x: 0, y: 0 } : null}
             onViewChange={setViewState}
+            backgroundColor={backgroundColor}
           />
         </div>
         <div className="create-controls-wrapper">
           <Controls
             drawMode={drawMode}
             setDrawMode={setDrawMode}
-            numIters={numIters}
-            setNumIters={setNumIters}
             treeModuleParallels={treeModuleParallels}
             setTMPs={setTMPs}
             onTMPUpdate={handleTMPUpdate}
@@ -228,6 +234,8 @@ const Create = () => {
             generateFractalLines={generateFractalLines}
             linesRef={linesRef}
             viewState={viewState}
+            backgroundColor={backgroundColor}
+            setBackgroundColor={setBackgroundColor}
           />
         </div>
       </div>

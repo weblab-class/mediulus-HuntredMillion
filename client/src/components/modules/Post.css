@@ -2,116 +2,116 @@
 
 .img {
   width: 100%;
-  
 }
 .PostContainer {
-    margin: 20px;
-    border: 1px solid white;
-    padding: 10px;
-    max-height: 800px;
-    min-height: 700px;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+  margin: 20px;
+  border: 1px solid white;
+  padding: 10px;
+  max-height: 800px;
+  min-height: 700px;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .Post-image img {
-  width:100%;
+  width: 50%;
   height: auto;
 }
 /* Style the scrollbar */
 .PostContainer::-webkit-scrollbar {
-    width: 5px; /* Width of the scrollbar */
-    height: 5px; /* Height for horizontal scrollbar */
-  }
-  
-  /* Style the scrollbar track */
-  .PostContainer::-webkit-scrollbar-track {
-    background: #f4f4f46c; /* Light background for the track */
-  }
-  
-  /* Style the scrollbar thumb (the draggable part) */
-  .PostContainer::-webkit-scrollbar-thumb {
-    background: #ffffff; /* White scrollbar thumb */
-    border-radius: 4px; /* Rounded edges for the thumb */
-  }
-  
-  /* Optional: Hover effect on the thumb */
-  .PostContainer::-webkit-scrollbar-thumb:hover {
-    background: #cccccc; /* Slightly darker when hovered */
-  }
-.ExitButton, .SubmitButton {
-    padding:5px 15px;
-    margin-right:0;
-    border: 1.043px solid #37ABFF;
-    border-radius: 34778px;
-    backdrop-filter: blur(1.7389342784881592px);
-    background-color: transparent;
-    color:white;
-    font-family: "Raleway", sans-serif;
-    text-align: center;
-    font-size: 17px;
+  width: 5px; /* Width of the scrollbar */
+  height: 5px; /* Height for horizontal scrollbar */
+}
+
+/* Style the scrollbar track */
+.PostContainer::-webkit-scrollbar-track {
+  background: #f4f4f46c; /* Light background for the track */
+}
+
+/* Style the scrollbar thumb (the draggable part) */
+.PostContainer::-webkit-scrollbar-thumb {
+  background: #ffffff; /* White scrollbar thumb */
+  border-radius: 4px; /* Rounded edges for the thumb */
+}
+
+/* Optional: Hover effect on the thumb */
+.PostContainer::-webkit-scrollbar-thumb:hover {
+  background: #cccccc; /* Slightly darker when hovered */
+}
+.ExitButton,
+.SubmitButton {
+  padding: 5px 15px;
+  margin-right: 0;
+  border: 1.043px solid #37abff;
+  border-radius: 34778px;
+  backdrop-filter: blur(1.7389342784881592px);
+  background-color: transparent;
+  color: white;
+  font-family: "Raleway", sans-serif;
+  text-align: center;
+  font-size: 17px;
 }
 
 hr {
-    border: none;
-    border-top: 1px solid white;
+  border: none;
+  border-top: 1px solid white;
 }
 
 .ContentContainer {
-    margin-top:10px;
+  margin-top: 10px;
 }
 .CommentButton {
-    color:white;
+  color: white;
 }
 
 .NumberOfLikes {
-    font-size: 20px;
-    color: white;
+  font-size: 20px;
+  color: white;
 }
 
 .FractalImage {
-    width: 100%; /* Adjust to fit the grid item */
-    background-color: white; /* Placeholder color */
+  width: 100%; /* Adjust to fit the grid item */
+  background-color: white; /* Placeholder color */
 }
 
 .AddCommentContainer {
-    display:flex;
+  display: flex;
 }
-.LikeAndComment, .ExitContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: right;
+.LikeAndComment,
+.ExitContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: right;
 }
 
 textarea {
-    background-color: transparent;
-    border: 1px solid white;
-    font-family: "Raleway", sans-serif;
-    font-size: 17px;
-    color: white;
-    width:100%;
-    margin-right:10px;
+  background-color: transparent;
+  border: 1px solid white;
+  font-family: "Raleway", sans-serif;
+  font-size: 17px;
+  color: white;
+  width: 100%;
+  margin-right: 10px;
 }
 
-.Liked, .Unliked {
-    color: pink;
+.Liked,
+.Unliked {
+  color: pink;
 }
 
-  .Liked {
-    animation: pop 0.3s ease-out;
-  }
-  
-  @keyframes pop {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.3);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
+.Liked {
+  animation: pop 0.3s ease-out;
+}
 
-
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

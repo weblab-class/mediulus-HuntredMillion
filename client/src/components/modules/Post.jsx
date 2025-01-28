@@ -11,8 +11,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Post = (props) => {
-
-  console.log("here are the props", props)
+  // console.log("here are the props", props)
   /**
    * A single comment on a fractal post.
    *
@@ -30,12 +29,12 @@ const Post = (props) => {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-      if (props.creator_id) {
-        get("/api/UserName", { user_id: props.creator_id })
-          .then((user) => setUserName(user.name))
-          .catch((err) => console.error("Error fetching username:", err));
-      }
-    }, [props.creator_id]);
+    if (props.creator_id) {
+      get("/api/UserName", { user_id: props.creator_id })
+        .then((user) => setUserName(user.name))
+        .catch((err) => console.error("Error fetching username:", err));
+    }
+  }, [props.creator_id]);
 
   ///////////////////////////////
   //Things to do with comments//
@@ -59,16 +58,9 @@ const Post = (props) => {
   };
 
   // Format the base64 data properly
-  const getImageSrc = (thumbnail) => {
-    if (!thumbnail || !thumbnail.data) return null;
-
-    // If the data already starts with "data:", use it directly
-    if (thumbnail.data.startsWith("data:")) {
-      return thumbnail.data;
-    }
-
-    // Otherwise, format it as a proper data URL
-    return `data:${thumbnail.contentType};base64,${thumbnail.data}`;
+  const getImageSrc = (fractalId) => {
+    // Use the correct port where your server is running
+    return `http://localhost:3000/api/fractal/${fractalId}/thumbnail`;
   };
 
   //Getting the comments for the post//
@@ -147,7 +139,7 @@ const Post = (props) => {
             <div className="Post-image">
               {props.thumbnail && (
                 <img
-                  src={getImageSrc(props.thumbnail)} // Base64 data is already in correct format
+                  src={getImageSrc(props._id)} // Just pass the fractal ID
                   alt={`Fractal by ${props.userName}`}
                   className="Post-fractal-image"
                   onError={(e) => console.error("Image failed to load:", e)}
@@ -156,7 +148,7 @@ const Post = (props) => {
             </div>
 
             <div className="ContentContainer">
-              {console.log(props.creator_name)}
+              {/* {console.log(props.creator_name)} */}
               <UserTextBlock user_name={userName} content={props.description} />
 
               {props.is_public && ( // Conditionally render LikeAndComment only if is_public is true

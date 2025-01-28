@@ -8,10 +8,6 @@
   box-sizing: border-box;
 }
 
-.controls-section {
-  margin-bottom: 24px;
-}
-
 .controls-heading {
   margin-bottom: 8px;
   font-size: 1.25rem;
@@ -50,7 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 16px 0;
+  margin: 8px 0;
 }
 
 .controls-add-button {
@@ -130,7 +126,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
 }
 
 .controls-color-input {
@@ -223,10 +218,13 @@
 }
 
 .controls-post-button {
-  background-image: url("../imgs/donebkgd.png");
+  background-image: url("../imgs/postbkgd.png");
+  background-color: rgba(150, 150, 150, 0.5);
   background-size: cover;
   background-position: center;
+  background-blend-mode: overlay;
   color: white;
+  /* color: black; */
   padding: 6px 28px;
   border: none;
   border-radius: 9999px;
@@ -247,4 +245,17 @@
 
 .controls-post-button:active {
   transform: scale(0.95);
+}
+
+.controls-horizontal-group {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 16px 0;
+}
+
+.global-settings-color-value {
+  font-family: monospace;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.9rem;
 }

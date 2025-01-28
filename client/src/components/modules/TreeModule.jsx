@@ -98,7 +98,7 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {}, checkUpdate = 
             value={decay}
             onChange={handleDecay}
             min={0}
-            max={1}
+            max={1.5}
             step={0.01}
             valueLabelDisplay="auto"
           />
@@ -111,7 +111,7 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {}, checkUpdate = 
             value={widthDecay}
             onChange={handleWidthDecay}
             min={0}
-            max={1}
+            max={1.5}
             step={0.01}
             valueLabelDisplay="auto"
           />

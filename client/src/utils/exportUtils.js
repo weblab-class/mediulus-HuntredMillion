@@ -75,14 +75,20 @@ export const downloadFractal = async ({
   }
 };
 
-export const createThumbnail = async ({ canvas, linesRef, viewState, backgroundColor }) => {
+export const createThumbnail = async ({
+  canvas,
+  linesRef,
+  viewState,
+  backgroundColor,
+  drawMode,
+}) => {
   try {
     if (!canvas) return null;
 
-    // Create a low-res canvas (300px width)
+    // Create a higher-res canvas for better quality thumbnails
     const thumbnailCanvas = document.createElement("canvas");
-    thumbnailCanvas.width = 150;
-    thumbnailCanvas.height = 150;
+    thumbnailCanvas.width = 600;
+    thumbnailCanvas.height = 600;
     const ctx = thumbnailCanvas.getContext("2d");
 
     // Fill background
@@ -100,11 +106,12 @@ export const createThumbnail = async ({ canvas, linesRef, viewState, backgroundC
     ctx.translate(viewState.pan.x, viewState.pan.y);
     ctx.scale(viewState.zoom * baseScale, viewState.zoom * baseScale);
 
-    // Draw all lines
-    const allLines = [
-      ...linesRef.current.initial,
-      ...Object.values(linesRef.current.branches).flat(),
-    ];
+    // Draw all lines based on drawMode
+    const allLines =
+      drawMode === "point"
+        ? Object.values(linesRef.current.branches).flat()
+        : [...linesRef.current.initial, ...Object.values(linesRef.current.branches).flat()];
+
     allLines.forEach((line) => {
       ctx.beginPath();
       ctx.strokeStyle = line.color;
@@ -114,11 +121,11 @@ export const createThumbnail = async ({ canvas, linesRef, viewState, backgroundC
       ctx.stroke();
     });
 
-    // Convert to base64 string
-    const base64Data = thumbnailCanvas.toDataURL("image/png", 0.5);
+    // Convert canvas to blob instead of base64
+    const blob = await new Promise((resolve) => thumbnailCanvas.toBlob(resolve, "image/png", 0.8));
 
     return {
-      data: base64Data,
+      blob,
       contentType: "image/png",
     };
   } catch (error) {

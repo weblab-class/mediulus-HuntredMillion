@@ -10,6 +10,8 @@
 const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
+const { uploadFile, downloadFile } = require("./utils/gridfs");
+const multer = require("multer");
 
 // import models so we can interact with the database
 const User = require("./models/user");
@@ -25,6 +27,12 @@ const router = express.Router();
 //initialize socket
 const socketManager = require("./server-socket");
 const user = require("./models/user");
+
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit per chunk
+  },
+});
 
 router.post("/login", auth.login);
 router.post("/logout", auth.logout);
@@ -303,9 +311,15 @@ router.post("/createFractal", async (req, res) => {
     );
     const defaultThumbnailBuffer = await fs.readFile(defaultThumbnailPath);
 
-    // Convert buffer to base64 data URL
-    const base64Data = `data:image/png;base64,${defaultThumbnailBuffer.toString("base64")}`;
-    const user = User.findById(req.body.userId);
+    // Upload default thumbnail to GridFS
+    const thumbnailId = await uploadFile(
+      defaultThumbnailBuffer,
+      "default_thumbnail.png",
+      "image/png"
+    );
+
+    const user = await User.findById(req.body.userId);
+
     // Create new fractal with default values
     const newFractal = new Fractal({
       creator_id: req.body.userId,
@@ -319,16 +333,13 @@ router.post("/createFractal", async (req, res) => {
       likes: 0,
       lastUpdated: new Date(),
       thumbnail: {
-        data: base64Data,
+        fileId: thumbnailId,
         contentType: "image/png",
       },
     });
 
     const savedFractal = await newFractal.save();
-
-    // Add fractal to user's fractals array
     await User.findByIdAndUpdate(req.body.userId, { $push: { fractals: savedFractal._id } });
-
     res.status(200).send(savedFractal);
   } catch (err) {
     console.error("Error creating fractal:", err);
@@ -338,20 +349,38 @@ router.post("/createFractal", async (req, res) => {
 
 router.post("/updateFractal", async (req, res) => {
   try {
-    const fractal = await Fractal.findById(req.body._id);
-    if (!fractal || fractal.creator_id !== req.body.creator_id) {
+    const { thumbnail, _id, creator_id, ...fractalData } = req.body;
+
+    const fractal = await Fractal.findById(_id);
+    if (!fractal || fractal.creator_id !== creator_id) {
       return res.status(403).send({ error: "Not authorized" });
     }
 
-    // Update the fractal with new values
+    // If there's a new thumbnail, upload it to GridFS
+    if (thumbnail) {
+      const thumbnailBuffer = Buffer.from(thumbnail.data.split(",")[1], "base64");
+      const thumbnailId = await uploadFile(
+        thumbnailBuffer,
+        `thumbnail_${_id}.png`,
+        thumbnail.contentType
+      );
+
+      fractal.thumbnail = {
+        fileId: thumbnailId,
+        contentType: thumbnail.contentType,
+      };
+    }
+
+    // Update other fractal data
     Object.assign(fractal, {
-      ...req.body,
+      ...fractalData,
       lastUpdated: new Date(),
     });
 
     const updatedFractal = await fractal.save();
     res.status(200).send(updatedFractal);
   } catch (err) {
+    console.error("Error updating fractal:", err);
     res.status(500).send({ error: "Could not update fractal" });
   }
 });
@@ -391,6 +420,65 @@ router.get("/findFollowers", async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ error: "Failed to find followers" });
+  }
+});
+
+// Add new endpoint to serve thumbnails
+router.get("/fractal/:id/thumbnail", async (req, res) => {
+  try {
+    console.log("1. Thumbnail request received for fractal:", req.params.id);
+    const fractal = await Fractal.findById(req.params.id);
+
+    if (!fractal) {
+      console.log("2. ERROR: Fractal not found");
+      return res.status(404).send({ error: "Fractal not found" });
+    }
+
+    console.log("3. Found fractal:", {
+      id: fractal._id,
+      thumbnailInfo: fractal.thumbnail,
+    });
+
+    if (!fractal.thumbnail || !fractal.thumbnail.fileId) {
+      console.log("4. ERROR: No thumbnail data in fractal document");
+      return res.status(404).send({ error: "Thumbnail not found" });
+    }
+
+    console.log("5. Attempting to download file with ID:", fractal.thumbnail.fileId);
+    const thumbnailBuffer = await downloadFile(fractal.thumbnail.fileId);
+
+    res.set("Content-Type", fractal.thumbnail.contentType);
+    res.send(thumbnailBuffer);
+  } catch (err) {
+    console.error("Error serving thumbnail:", err);
+    res.status(500).send({ error: "Could not serve thumbnail" });
+  }
+});
+
+// New endpoint for chunked thumbnail upload
+router.post("/fractal/:id/thumbnail", upload.single("thumbnail"), async (req, res) => {
+  try {
+    const fractal = await Fractal.findById(req.params.id);
+    if (!fractal) {
+      return res.status(404).send({ error: "Fractal not found" });
+    }
+
+    const thumbnailId = await uploadFile(
+      req.file.buffer,
+      `thumbnail_${req.params.id}.png`,
+      req.file.mimetype
+    );
+
+    fractal.thumbnail = {
+      fileId: thumbnailId,
+      contentType: req.file.mimetype,
+    };
+    await fractal.save();
+
+    res.status(200).send({ success: true });
+  } catch (err) {
+    console.error("Error uploading thumbnail:", err);
+    res.status(500).send({ error: "Could not upload thumbnail" });
   }
 });
 
