@@ -79,6 +79,8 @@ const Account = (props) => {
           }
         })
         .catch((err) => console.error("Error updating bio:", err));
+    } else {
+      setNewDescription(description);
     }
     setEditing(!editing);
   };
@@ -99,21 +101,11 @@ const Account = (props) => {
     let postsOdd = postsList.filter((_, index) => index % 2 !== 0);
 
     let postsListEven = postsEven.map((postObj) => (
-      <Post
-        key={`Card_${postObj._id}`}
-        {...postObj}
-        userId={userId}
-        userName={userName}
-      />
+      <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName} />
     ));
 
     let postsListOdd = postsOdd.map((postObj) => (
-      <Post
-        key={`Card_${postObj._id}`}
-        {...postObj}
-        userId={userId}
-        userName={userName}
-      />
+      <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={userName} />
     ));
 
     return [postsListEven, postsListOdd];
@@ -148,34 +140,30 @@ const Account = (props) => {
             <button onClick={() => togglePopUp("followers")}>Followers</button>
             <button onClick={() => togglePopUp("following")}>Following</button>
             <button onClick={() => setPostType("all")}>Fractals</button>
-            <button onClick={() => setPostType("private")}>
-              Private Fractals
-            </button>
-            <button onClick={() => setPostType("public")}>
-              Public Fractals
-            </button>
+            <button onClick={() => setPostType("private")}>Private Fractals</button>
+            <button onClick={() => setPostType("public")}>Public Fractals</button>
           </div>
           <div className="UserBio">
-          {editing ? (
-            <textarea
-              className="custom-bio"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              onInput={(e) => {
-                e.target.style.height = "auto"; // Reset height to calculate the full height
-                e.target.style.height = `${e.target.scrollHeight}px`; // Set height based on content
-              }}
-              placeholder="Write something about yourself..."
-            ></textarea>
-          ) : (
-            <p className = 'bio'>{description || "No bio available."}</p>
-          )}
+            {editing ? (
+              <textarea
+                className="custom-bio"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                onInput={(e) => {
+                  e.target.style.height = "auto"; // Reset height to calculate the full height
+                  e.target.style.height = `${e.target.scrollHeight}px`; // Set height based on content
+                }}
+                placeholder="Write something about yourself..."
+              ></textarea>
+            ) : (
+              <p className="bio">{description || "No bio available."}</p>
+            )}
           </div>
         </div>
       </div>
       <div className="UserSelectedFractals">
-        <div className = 'FractalSide'>{DisplayedPosts[0]}</div>
-        <div className = 'FractalSide'>{DisplayedPosts[1]}</div>
+        <div className="FractalSide">{DisplayedPosts[0]}</div>
+        <div className="FractalSide">{DisplayedPosts[1]}</div>
       </div>
       {popUp && (
         <div className="Overlay" onClick={closePopUp}>

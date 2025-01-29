@@ -1,11 +1,14 @@
 .controls-container {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 24px 24px 10px 24px;
+  padding: 16px 16px 8px 16px;
   overflow-y: hidden;
   border-radius: 15px;
   box-sizing: border-box;
+  overflow: hidden;
+  /* transition: transform 3s ease; */
 }
 
 .controls-heading {
@@ -170,7 +173,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  position: relative;
 }
 
 .controls-section-title {
@@ -191,29 +195,35 @@
 .controls-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 8px 24px 0 24px;
   margin-top: auto;
+  position: relative;
+}
+
+.controls-actions-left {
+  position: absolute;
+  left: 12px;
+}
+
+.controls-actions-right {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: right;
+  gap: 24px;
 }
 
 .controls-download-button,
-.controls-export-button {
+.controls-export-button,
+.controls-menu-button {
   padding: 8px;
-}
-
-.controls-download-button {
   color: rgba(0, 0, 0, 0.54);
 }
 
-.controls-download-button:hover {
-  color: rgba(0, 0, 0, 0.87);
-}
-
-.controls-export-button {
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.controls-export-button:hover {
+.controls-download-button:hover,
+.controls-export-button:hover,
+.controls-menu-button:hover {
   color: rgba(0, 0, 0, 0.87);
 }
 
@@ -231,12 +241,12 @@
   font-size: 18px;
   font-weight: 500;
   cursor: pointer;
-  transition: transform 0.2s ease;
-  margin: 0 auto;
+  margin: 0;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s ease;
 }
 
 .controls-post-button:hover {
@@ -251,11 +261,72 @@
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
 .global-settings-color-value {
   font-family: monospace;
   color: rgba(0, 0, 0, 0.7);
   font-size: 0.9rem;
+}
+
+.controls-section-save-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* .cover-sheet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  transform: translateY(calc(100% - 60px));
+  transition: transform 0.8s ease;
+  z-index: 10;
+} */
+
+/* .controls-sharing-divider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.5px;
+  background-color: lightgrey;
+} */
+/* .show-cover .cover-sheet {
+  transform: translateY(0);
+} */
+
+/* Add styles for the menu */
+.controls-menu-paper.MuiMenu-paper {
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  min-width: 300px;
+  border-radius: 4px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.controls-menu-paper .MuiList-root {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 8px 0 !important;
+}
+
+.controls-menu-item.MuiMenuItem-root {
+  padding: 12px 24px !important;
+  font-size: 16px !important;
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.controls-menu-item-delete.MuiMenuItem-root {
+  color: #d32f2f !important;
+  font-weight: 700 !important;
 }

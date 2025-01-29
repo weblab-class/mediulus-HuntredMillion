@@ -46,8 +46,7 @@ const Post = (props) => {
   // console.log("Thumbnail data for post:", props.thumbnail); // Debug log
   const navigate = useNavigate();
 
-  const handlePostClick = () => {
-    // Only navigate to edit if the user owns the post
+  const handleImageClick = () => {
     if (props.creator_id === props.userId) {
       navigate(`/create`, {
         state: {
@@ -126,7 +125,7 @@ const Post = (props) => {
   };
 
   return (
-    <div className="PostContainer" onClick={handlePostClick}>
+    <div className="PostContainer">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -134,12 +133,11 @@ const Post = (props) => {
         transition={{ duration: 0.5 }}
       >
         {!seeComments ? (
-          // This is the Post Container //
           <div className="PostView">
-            <div className="Post-image">
+            <div className="Post-image" onClick={handleImageClick}>
               {props.thumbnail && (
                 <img
-                  src={getImageSrc(props._id)} // Just pass the fractal ID
+                  src={getImageSrc(props._id)}
                   alt={`Fractal by ${props.userName}`}
                   className="Post-fractal-image"
                   onError={(e) => console.error("Image failed to load:", e)}

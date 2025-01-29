@@ -14,6 +14,7 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import TreeModuleParallel from "./TreeModuleParallel";
@@ -25,6 +26,10 @@ import DownloadDialog from "./DownloadDialog";
 import { post, get } from "../../utilities";
 import { UserContext } from "../App";
 import { useLocation } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 const Controls = ({
   drawMode,
@@ -55,6 +60,10 @@ const Controls = ({
   const [fractalId, setFractalId] = useState(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [isPosting, setIsPosting] = useState(false);
+  const [isPublic, setIsPublic] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
   const handleDrawModeChange = (event) => {
     setDrawMode(event.target.value);
@@ -119,6 +128,7 @@ const Controls = ({
           setBackgroundColor(fractal.backgroundColor);
           setDrawMode(fractal.drawMode);
           setTMPs(fractal.treeModuleParallels);
+          setIsPublic(fractal.is_public);
           setIsInitialLoad(false);
         })
         .catch((err) => {
@@ -151,6 +161,7 @@ const Controls = ({
       return;
     }
 
+    setSaveStatus("Saving...");
     const updateFractal = async () => {
       console.log("Starting fractal save...");
       console.log("Saving fractal...", {
@@ -160,6 +171,7 @@ const Controls = ({
         backgroundColor,
         drawMode,
         modules: treeModuleParallels.length,
+        isPublic,
       });
 
       const canvas = document.querySelector(".display-canvas");
@@ -192,6 +204,7 @@ const Controls = ({
           backgroundColor,
           drawMode,
           treeModuleParallels,
+          is_public: isPublic,
         });
 
         if (!response._id) {
@@ -200,15 +213,26 @@ const Controls = ({
 
         console.log("Fractal saved successfully!");
         setHasChanges(false);
+        setSaveStatus(`Saved at ${new Date().toLocaleTimeString()}`);
       } catch (error) {
         console.error("Error updating fractal:", error);
+        setSaveStatus("Save failed");
       }
     };
 
     const saveTimeout = setTimeout(updateFractal, 1000);
 
     return () => clearTimeout(saveTimeout);
-  }, [fractalId, userId, description, backgroundColor, drawMode, treeModuleParallels, hasChanges]); //title,
+  }, [
+    fractalId,
+    userId,
+    description,
+    backgroundColor,
+    drawMode,
+    treeModuleParallels,
+    hasChanges,
+    isPublic,
+  ]); //title,
 
   const handleDownloadClick = () => {
     setDownloadDialogOpen(true);
@@ -239,34 +263,90 @@ const Controls = ({
     }
   };
 
+  const handlePostClick = async () => {
+    if (!isInitialLoad) setHasChanges(true);
+    setIsPublic(!isPublic);
+  };
+
+  // const handleBackClick = () => {
+  //   setIsPosting(false);
+  // };
+
+  const handleTMPUpdate = (id, updates) => {
+    onTMPUpdate(id, updates);
+    if (!isInitialLoad) setHasChanges(true);
+  };
+
+  const handleMenuOpen = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
+  const handleDelete = async () => {
+    if (!fractalId) return;
+
+    try {
+      const response = await post("/api/deleteFractal", {
+        _id: fractalId,
+        userId: userId,
+      });
+
+      if (response._id) {
+        // Redirect to home page after successful deletion
+        window.location.href = "/Account";
+      } else {
+        console.error("Failed to delete fractal");
+      }
+    } catch (error) {
+      console.error("Error deleting fractal:", error);
+    }
+    handleMenuClose();
+  };
+
+  const handleCopyLink = () => {
+    // TODO: Implement copy link functionality
+    handleMenuClose();
+  };
+
+  const handleTutorial = () => {
+    // TODO: Implement tutorial functionality
+    handleMenuClose();
+  };
+
   return (
-    <Paper elevation={3} className="controls-container">
+    <Paper elevation={3} className={`controls-container `}>
+      {/*isPosting ? "show-cover" : ""*/}
+      {/* {isPosting && (
+        <div className="posting-controls-header">
+          <Tooltip title="Back">
+            <IconButton onClick={handleBackClick} className="controls-posting-back" size="small">
+              <ArrowBackIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      )} */}
       <div className="controls-section">
         <div className="controls-section-header">
           <div className="controls-section-title">
-            <IconButton
-              size="small"
-              onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
-              className={`expand-button ${isSettingsExpanded ? "expanded" : ""}`}
-            >
-              <ChevronRightIcon />
-            </IconButton>
-            <Typography variant="h6">Global Settings</Typography>
+            <Tooltip title={isSettingsExpanded ? "Close Canvas Settings" : "Open Canvas Settings"}>
+              <IconButton
+                size="small"
+                onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+                className={`expand-button ${isSettingsExpanded ? "expanded" : ""}`}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="h6">Canvas Settings</Typography>
           </div>
+          {saveStatus && <div className="controls-section-save-status">{saveStatus}</div>}
         </div>
 
         {isSettingsExpanded && (
           <div className="controls-section-content">
-            {/* <TextField
-              fullWidth
-              label="Title"
-              variant="outlined"
-              size="small"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              margin="normal"
-            /> */}
-
             <TextField
               fullWidth
               label="Description"
@@ -319,47 +399,75 @@ const Controls = ({
           </div>
         )}
       </div>
-
       <Divider />
-
       <div className="controls-module-header">
         <Typography variant="h6">Branches: {treeModuleParallels.length}</Typography>
-        <IconButton onClick={handleAddTMP} className="controls-add-button">
-          <AddIcon />
-        </IconButton>
+        <Tooltip title="Add Branch">
+          <IconButton onClick={handleAddTMP} className="controls-add-button">
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
       </div>
-
       <div className="controls-module-list">
         {treeModuleParallels.map((module) => (
           <TreeModuleParallel
             key={module.id}
             id={module.id}
             onDelete={handleDeleteTMP}
-            onUpdate={onTMPUpdate}
+            onUpdate={handleTMPUpdate}
             initialValues={module}
             calculateAllBranchesLines={calculateAllBranchesLines}
             treeModuleParallels={treeModuleParallels}
           />
         ))}
       </div>
-
-      <Divider />
-
+      <Divider className="controls-sharing-divider" />
       <div className="controls-actions">
-        <IconButton onClick={handleDownloadClick} className="controls-download-button">
-          <DownloadIcon />
-        </IconButton>
-        <button className="controls-post-button">POST</button>
-        <IconButton onClick={handleShare} className="controls-export-button">
-          <IosShareIcon />
-        </IconButton>
-      </div>
+        <div className="controls-actions-left">
+          <IconButton onClick={handleDownloadClick} className="controls-download-button">
+            <DownloadIcon />
+          </IconButton>
+        </div>
 
+        <button onClick={handlePostClick} className="controls-post-button">
+          {isPublic ? "ARCHIVE POST" : "POST"}
+        </button>
+
+        <div className="controls-actions-right">
+          <IconButton onClick={handleShare} className="controls-export-button">
+            <IosShareIcon />
+          </IconButton>
+          <IconButton onClick={handleMenuOpen} className="controls-menu-button">
+            <MoreVertIcon />
+          </IconButton>
+        </div>
+      </div>
       <DownloadDialog
         open={downloadDialogOpen}
         onClose={() => setDownloadDialogOpen(false)}
         onDownload={handleDownload}
       />
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl)}
+        onClose={handleMenuClose}
+        classes={{ paper: "controls-menu-paper" }}
+        anchorReference="none"
+      >
+        <MenuItem onClick={handleDelete} className="controls-menu-item controls-menu-item-delete">
+          Delete
+        </MenuItem>
+        <MenuItem onClick={handleCopyLink} className="controls-menu-item">
+          Copy Link
+        </MenuItem>
+        <MenuItem onClick={handleTutorial} className="controls-menu-item">
+          Tutorial
+        </MenuItem>
+        <MenuItem onClick={handleMenuClose} className="controls-menu-item">
+          Cancel
+        </MenuItem>
+      </Menu>
     </Paper>
   );
 };

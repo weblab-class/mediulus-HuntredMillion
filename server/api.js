@@ -152,7 +152,6 @@ router.get("/UserPosts", async (req, res) => {
   }
 });
 
-
 router.get("/comment", async (req, res) => {
   try {
     const comments = await Comment.find({ fractal_id: req.query.parent });
@@ -197,7 +196,7 @@ router.get("/isLiked", async (req, res) => {
   }
 });
 
-router.get('/ProfileId', async (req, res) => {
+router.get("/ProfileId", async (req, res) => {
   try {
     // Ensure the query parameter exists
     const { user_name } = req.query;
@@ -358,6 +357,25 @@ router.post("/createFractal", async (req, res) => {
 
     const user = await User.findById(req.body.userId);
 
+    // const initialTMPs = [
+    //   {
+    //     id: Date.now(),
+    //     numIters: 1,
+    //     name: "Branch 1",
+    //     initWidth: 2,
+    //     treeModules: [
+    //       {
+    //         id: Date.now(),
+    //         numLines: 2,
+    //         name: "Segment 1",
+    //         angle: 45,
+    //         decay: 0.5,
+    //         widthDecay: 1,
+    //         color: "#000000",
+    //       },
+    //     ],
+    //   },
+    // ];
     // Create new fractal with default values
     const newFractal = new Fractal({
       creator_id: req.body.userId,
@@ -517,6 +535,34 @@ router.post("/fractal/:id/thumbnail", upload.single("thumbnail"), async (req, re
   } catch (err) {
     console.error("Error uploading thumbnail:", err);
     res.status(500).send({ error: "Could not upload thumbnail" });
+  }
+});
+
+// Add this with the other fractal endpoints
+router.post("/deleteFractal", async (req, res) => {
+  try {
+    const fractal = await Fractal.findById(req.body._id);
+    if (!fractal) {
+      return res.status(404).send({ error: "Fractal not found" });
+    }
+
+    // Optional: Check if user is authorized to delete
+    if (fractal.creator_id !== req.body.userId) {
+      return res.status(403).send({ error: "Not authorized to delete this fractal" });
+    }
+
+    // Delete the fractal
+    await Fractal.findByIdAndDelete(req.body._id);
+
+    // Remove fractal from user's fractals array
+    await User.findByIdAndUpdate(fractal.creator_id, {
+      $pull: { fractals: req.body._id },
+    });
+
+    res.status(200).send(fractal); // Send back the deleted fractal for confirmation
+  } catch (err) {
+    console.error("Error deleting fractal:", err);
+    res.status(500).send({ error: "Could not delete fractal" });
   }
 });
 

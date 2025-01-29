@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Paper, Slider, IconButton, Snackbar, Alert } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Paper, Slider, IconButton, Snackbar, Alert, Typography, Tooltip } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AddIcon from "@mui/icons-material/Add";
 import TreeModule from "./TreeModule";
 import "./TreeModuleParallel.css";
@@ -156,23 +156,24 @@ const TreeModuleParallel = ({
   return (
     <Paper elevation={2} className="tree-module">
       <div className="tree-module-header">
-        <input
-          type="text"
-          value={name}
-          onChange={handleNameChange}
-          className="tree-module-title-input"
-        />
+        <div className="tree-module-title-group">
+          <input
+            type="text"
+            value={name}
+            onChange={handleNameChange}
+            className="tree-module-title-input"
+          />
+        </div>
         <div className="tree-module-actions">
-          <IconButton
-            size="small"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={`expand-button ${isExpanded ? "expanded" : ""}`}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-          <IconButton size="small" onClick={() => onDelete(id)} className="tree-module-close">
-            <CloseIcon />
-          </IconButton>
+          <Tooltip title="Delete Branch">
+            <IconButton
+              size="small"
+              onClick={() => onDelete(id)}
+              className="tree-module-parallel-close"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
 
@@ -205,6 +206,28 @@ const TreeModuleParallel = ({
         </div>
       </div>
 
+      <div className="tree-module-segments-header">
+        <div className="segments-title-group">
+          <Tooltip title={isExpanded ? "Collapse Segments" : "Expand Segments"}>
+            <IconButton
+              size="small"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={`expand-button ${isExpanded ? "expanded" : ""}`}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          </Tooltip>
+          <Typography variant="subtitle1">Segments: {treeModules.length}</Typography>
+        </div>
+        {isExpanded && (
+          <Tooltip title="Add Segment">
+            <IconButton onClick={handleAddTreeModule} className="tree-module-add" size="small">
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </div>
+
       {isExpanded && (
         <div className="tree-module-list">
           {treeModules.map((module) => (
@@ -217,9 +240,6 @@ const TreeModuleParallel = ({
               checkUpdate={checkLineLimit}
             />
           ))}
-          <IconButton onClick={handleAddTreeModule} className="tree-module-add" size="small">
-            <AddIcon />
-          </IconButton>
         </div>
       )}
 

@@ -18,8 +18,7 @@
 
 .tree-module-close {
   position: absolute;
-  right: 8px;
-  top: 8px;
+  padding: 8px;
   color: rgba(0, 0, 0, 0.54);
 }
 
@@ -31,7 +30,7 @@
 .tree-module-controls {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .tree-module-control {
@@ -40,6 +39,7 @@
 
 .tree-module-label {
   margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 .tree-module-slider {

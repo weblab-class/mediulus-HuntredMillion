@@ -18,11 +18,18 @@
 
 .tree-module-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
-.tree-module-close {
+.tree-module-parallel-close {
   color: rgba(0, 0, 0, 0.54);
+  display: flex;
+  padding: 8px;
+  align-items: center; /* Centers the icon within this div */
+  justify-content: center;
+  box-sizing: border-box; /* Ensure padding doesn't affect alignment */
 }
 
 .tree-module-close:hover {
@@ -33,6 +40,7 @@
 .expand-button {
   color: rgba(0, 0, 0, 0.54);
   transition: transform 0.3s ease;
+  padding: 4px;
 }
 
 .expand-button.expanded {
@@ -40,7 +48,7 @@
 }
 
 .tree-module-controls {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .tree-module-control {
@@ -49,27 +57,47 @@
 
 .tree-module-label {
   margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 .tree-module-slider {
   width: 100%;
 }
 
+.tree-module-segments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.segments-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .tree-module-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  padding: 8px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .tree-module-add {
   align-self: flex-end;
-  color: #1976d2 !important;
+  /* color: #000000 !important; */
 }
 
 .tree-module-add:hover {
   background-color: rgba(25, 118, 210, 0.04) !important;
+}
+
+.tree-module-title-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .tree-module-title-input {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Paper, Slider, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Paper, Slider, IconButton, Tooltip } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/DeleteOutline";
 import "./TreeModule.css";
 
 const TreeModule = ({ id, onDelete, onUpdate, initialValues = {}, checkUpdate = () => true }) => {
@@ -58,9 +58,11 @@ const TreeModule = ({ id, onDelete, onUpdate, initialValues = {}, checkUpdate = 
           onChange={handleNameChange}
           className="tree-module-title-input"
         />
-        <IconButton size="small" onClick={() => onDelete(id)} className="tree-module-close">
-          <CloseIcon />
-        </IconButton>
+        <Tooltip title="Delete Segment">
+          <IconButton size="small" onClick={() => onDelete(id)} className="tree-module-close">
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </div>
 
       <div className="tree-module-controls">

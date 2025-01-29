@@ -13,10 +13,22 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Add hover and click styles for the image container */
+.Post-image {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.Post-image:hover {
+  transform: scale(1.02); /* Subtle 2% growth on hover */
+}
+
 .Post-image img {
-  width: 50%;
+  width: 100%;
   height: auto;
 }
+
 /* Style the scrollbar */
 .PostContainer::-webkit-scrollbar {
   width: 5px; /* Width of the scrollbar */

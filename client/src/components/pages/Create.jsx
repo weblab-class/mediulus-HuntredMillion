@@ -10,7 +10,27 @@ const Create = () => {
   const fractalId = location.state?.fractalId;
   const [drawMode, setDrawMode] = useState("line");
   // const [numIters, setNumIters] = useState(1);
-  const [treeModuleParallels, setTMPs] = useState([]);
+  const initialTMPs = [
+    {
+      id: Date.now(),
+      numIters: 1,
+      name: "Branch 1",
+      initWidth: 2,
+      treeModules: [
+        {
+          id: Date.now(),
+          numLines: 2,
+          name: "Segment 1",
+          angle: 45,
+          decay: 0.5,
+          widthDecay: 1,
+          color: "#000000",
+        },
+      ],
+    },
+  ];
+
+  const [treeModuleParallels, setTMPs] = useState(initialTMPs);
   const [renderTrigger, setRenderTrigger] = useState(0);
   const [viewState, setViewState] = useState({ zoom: 1, pan: { x: 0, y: 0 } });
   const [backgroundColor, setBackgroundColor] = useState("#FFFFFF");
