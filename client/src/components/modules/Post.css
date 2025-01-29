@@ -3,6 +3,8 @@
 .img {
   width: 100%;
 }
+
+
 .PostContainer {
   margin: 20px;
   border: 1px solid white;
@@ -14,7 +16,7 @@
 }
 
 .Post-image img {
-  width: 50%;
+  width: 100%;
   height: auto;
 }
 /* Style the scrollbar */

@@ -122,7 +122,7 @@ const Feed = (props) => {
   return (
     <div className="Container">
       <div className="Buttons">
-        <div className="Filter">
+        {/* <div className="Filter">
           <button className="CustomFeedButton" onClick={toggleCustomDisplay}>
             Customize Feed
           </button>
@@ -141,7 +141,7 @@ const Feed = (props) => {
               <p onClick={hideCustomDisplay}>Following</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="SearchContainer">
           {showSearch && (
