@@ -54,17 +54,17 @@ mongoose
     dbName: databaseName,
   })
   .then((mongoose) => {
-    console.log("16. MongoDB connected, database:", mongoose.connection.db.databaseName);
-    console.log("17. Initializing GridFS...");
+    // console.log("16. MongoDB connected, database:", mongoose.connection.db.databaseName);
+    // console.log("17. Initializing GridFS...");
     initGridFS(mongoose.connection.db);
-    console.log("18. GridFS initialization complete");
+    // console.log("18. GridFS initialization complete");
   })
   .catch((err) => {
-    console.error("19. MongoDB connection error:", {
-      error: err,
-      message: err.message,
-      stack: err.stack,
-    });
+    // console.log("19. MongoDB connection error:", {
+    //   error: err,
+    //   message: err.message,
+    //   stack: err.stack,
+    // });
   });
 
 // create a new express server

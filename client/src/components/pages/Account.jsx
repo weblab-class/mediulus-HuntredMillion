@@ -5,6 +5,9 @@ import { get, post } from "../../utilities";
 import Post from "../modules/Post.jsx";
 import Following from "../modules/Following.jsx";
 import Followers from "../modules/Followers.jsx";
+import { processProfileImage } from "../../utils/imageUtils.js";
+import DoneBkgd from "../imgs/DoneBkgd.png";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Account = (props) => {
   const { userId } = useContext(UserContext);
@@ -18,6 +21,7 @@ const Account = (props) => {
   const [description, setDescription] = useState("");
   const [editing, setEditing] = useState(false);
   const [newDescription, setNewDescription] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
 
   // Fetch username
   useEffect(() => {
@@ -67,6 +71,25 @@ const Account = (props) => {
         console.error("Error fetching description:", err);
         setDescription("Failed to load description.");
       });
+  }, [userId]);
+
+  // Add useEffect to fetch profile picture
+  useEffect(() => {
+    if (userId) {
+      fetch(`/api/user/${userId}/profile-picture`)
+        .then((response) => {
+          if (response.ok) {
+            return response.blob();
+          }
+          throw new Error("Profile picture not found");
+        })
+        .then((blob) => {
+          setProfilePicture(URL.createObjectURL(blob));
+        })
+        .catch(() => {
+          setProfilePicture(null);
+        });
+    }
   }, [userId]);
 
   // Toggle editing
@@ -121,13 +144,61 @@ const Account = (props) => {
     DisplayedPosts = splitPosts(publicPosts);
   }
 
+  const handleProfilePictureChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const processedImage = await processProfileImage(file);
+
+      const formData = new FormData();
+      formData.append("profile_picture", processedImage);
+
+      const response = await fetch(`/api/user/${userId}/profile-picture`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        // Force reload of profile picture by updating state
+        setProfilePicture(URL.createObjectURL(processedImage));
+      }
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+    }
+  };
+
   return (
     <div className="Account">
       <div className="Profile">
         <div className="TopSection">
           <div className="PictureContainer">
             <div className="ProfilePic">
-              <img src="/imgs/osu.jpeg" alt="user profile pic" />
+              {profilePicture ? (
+                <img src={profilePicture} alt="user profile pic" />
+              ) : (
+                <AccountCircleIcon
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    color: "white", // or any color you prefer
+                  }}
+                />
+              )}
+              {editing && (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureChange}
+                    style={{ display: "none" }}
+                    id="profile-picture-input"
+                  />
+                  <label htmlFor="profile-picture-input" className="change-picture-button">
+                    Change Picture
+                  </label>
+                </>
+              )}
             </div>
             <div className="UserNameAndEdit">
               <p className="userName">{userName}</p>

@@ -1,13 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap");
 nav {
   display: flex;
-  align-items:center;
+  align-items: center;
   justify-content: center;
-  padding: 0 20px ;
+  padding: 0 20px;
 }
 
 .linky {
-  margin: 0 15px;
+  margin: 0 25px;
 }
 
 .login {
@@ -16,19 +16,18 @@ nav {
   align-items: center;
 }
 .login button {
-  background-color:transparent;
-  color:white;
-  border:none;
-  font-family: 'Raleway';
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-family: "Raleway";
   font-size: 15px;
-  
 }
 .login button:hover {
-  color:#37ABFF ;
+  color: #37abff;
 }
 
 a:hover {
-  color: #37ABFF;
+  color: #37abff;
 }
 
 .FractalFlow:hover {
@@ -36,48 +35,49 @@ a:hover {
 }
 
 .rightContainer {
-  width:100%;
-  display:flex;
+  width: 100%;
+  display: flex;
   justify-content: right;
 }
 .navigation {
   width: 100%;
-  display:flex;
+  display: flex;
   align-items: center;
 }
 
 ul {
-    list-style-type: none; /* Removes bullets */
-    display: flex; /* Horizontally aligns the items */
-    align-items: center; /*vertical center*/
-    padding: 0px;
+  list-style-type: none; /* Removes bullets */
+  display: flex; /* Horizontally aligns the items */
+  align-items: center; /*vertical center*/
+  padding: 0px;
 }
 
 .rightContainer li {
   margin: 0 15px;
 }
-li, a {
-    font-family: "Raleway", sans-serif;
-    color: white;
-    font-size: 23px;
-    text-decoration: none;
-    align-items: center;
-  }
-
+li,
+a {
+  font-family: "Raleway", sans-serif;
+  color: white;
+  font-size: 23px;
+  text-decoration: none;
+  align-items: center;
+}
 
 .FractalFlow {
   transition: transform 0.3s ease;
+  margin-right: 15px;
 }
 
 .create {
-  background: url('../imgs/CreateBackground.png');
+  background: url("../imgs/CreateBackground.png");
   border: 1px solid white;
   padding: 7px;
   border-radius: 10px;
 }
 
 .create:hover {
-  background-color:#37ABFF;
+  background-color: #37abff;
 }
 
 .content {
@@ -85,15 +85,16 @@ li, a {
   align-items: center;
 }
 .FractalFlow img {
-  height:35px;
-  width:auto;
+  height: 35px;
+  width: auto;
 }
 @media (max-width: 700px) {
-  ul, nav, .login, .navigation {
-      justify-content: center; /* Center horizontally */
-      align-items: center; /* Center vertically */
-      flex-direction: column; /* Optional: Stack items vertically */
+  ul,
+  nav,
+  .login,
+  .navigation {
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column; /* Optional: Stack items vertically */
   }
-
-  
 }

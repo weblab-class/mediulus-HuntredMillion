@@ -482,25 +482,25 @@ router.get("/findFollowers", async (req, res) => {
 // Add new endpoint to serve thumbnails
 router.get("/fractal/:id/thumbnail", async (req, res) => {
   try {
-    console.log("1. Thumbnail request received for fractal:", req.params.id);
+    // console.log("1. Thumbnail request received for fractal:", req.params.id);
     const fractal = await Fractal.findById(req.params.id);
 
     if (!fractal) {
-      console.log("2. ERROR: Fractal not found");
+      // console.log("2. ERROR: Fractal not found");
       return res.status(404).send({ error: "Fractal not found" });
     }
 
-    console.log("3. Found fractal:", {
-      id: fractal._id,
-      thumbnailInfo: fractal.thumbnail,
-    });
+    // console.log("3. Found fractal:", {
+    //   id: fractal._id,
+    //   thumbnailInfo: fractal.thumbnail,
+    // });
 
     if (!fractal.thumbnail || !fractal.thumbnail.fileId) {
-      console.log("4. ERROR: No thumbnail data in fractal document");
+      // console.log("4. ERROR: No thumbnail data in fractal document");
       return res.status(404).send({ error: "Thumbnail not found" });
     }
 
-    console.log("5. Attempting to download file with ID:", fractal.thumbnail.fileId);
+    // console.log("5. Attempting to download file with ID:", fractal.thumbnail.fileId);
     const thumbnailBuffer = await downloadFile(fractal.thumbnail.fileId);
 
     res.set("Content-Type", fractal.thumbnail.contentType);
@@ -563,6 +563,50 @@ router.post("/deleteFractal", async (req, res) => {
   } catch (err) {
     console.error("Error deleting fractal:", err);
     res.status(500).send({ error: "Could not delete fractal" });
+  }
+});
+
+// Get profile picture
+router.get("/user/:id/profile-picture", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.profile_picture || !user.profile_picture.fileId) {
+      return res.status(404).send({ error: "Profile picture not found" });
+    }
+
+    const imageBuffer = await downloadFile(user.profile_picture.fileId);
+    res.set("Content-Type", user.profile_picture.contentType);
+    res.send(imageBuffer);
+  } catch (err) {
+    console.error("Error serving profile picture:", err);
+    res.status(500).send({ error: "Could not serve profile picture" });
+  }
+});
+
+// Upload profile picture
+router.post("/user/:id/profile-picture", upload.single("profile_picture"), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    const imageId = await uploadFile(
+      req.file.buffer,
+      `profile_${req.params.id}.png`,
+      req.file.mimetype
+    );
+
+    user.profile_picture = {
+      fileId: imageId,
+      contentType: req.file.mimetype,
+    };
+    await user.save();
+
+    res.status(200).send({ success: true });
+  } catch (err) {
+    console.error("Error uploading profile picture:", err);
+    res.status(500).send({ error: "Could not upload profile picture" });
   }
 });
 

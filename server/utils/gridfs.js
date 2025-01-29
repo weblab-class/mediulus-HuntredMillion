@@ -6,12 +6,12 @@ const { BSON } = require("bson");
 let gridFSBucket;
 
 const initGridFS = (db) => {
-  console.log("14. Initializing GridFS bucket");
+  //   console.log("14. Initializing GridFS bucket");
   gridFSBucket = new GridFSBucket(db, {
     bucketName: "fractalImages",
     bson: BSON,
   });
-  console.log("15. GridFS bucket initialized:", !!gridFSBucket);
+  //   console.log("15. GridFS bucket initialized:", !!gridFSBucket);
 };
 
 const uploadFile = async (buffer, filename, contentType) => {
@@ -39,20 +39,20 @@ const uploadFile = async (buffer, filename, contentType) => {
 };
 
 const downloadFile = async (fileId) => {
-  console.log("8. Starting GridFS download for fileId:", fileId);
+  //   console.log("8. Starting GridFS download for fileId:", fileId);
 
   if (!gridFSBucket) {
-    console.error("9. ERROR: GridFS bucket not initialized!");
+    // console.error("9. ERROR: GridFS bucket not initialized!");
     throw new Error("GridFS not initialized");
   }
 
   return new Promise((resolve, reject) => {
     const chunks = [];
-    console.log("10. Creating download stream...");
+    // console.log("10. Creating download stream...");
     const downloadStream = gridFSBucket.openDownloadStream(new mongoose.Types.ObjectId(fileId));
 
     downloadStream.on("data", (chunk) => {
-      console.log("11. Received chunk of size:", chunk.length);
+      //   console.log("11. Received chunk of size:", chunk.length);
       chunks.push(chunk);
     });
 
@@ -66,7 +66,7 @@ const downloadFile = async (fileId) => {
     });
 
     downloadStream.on("end", () => {
-      console.log("13. Download stream ended, total chunks:", chunks.length);
+      //   console.log("13. Download stream ended, total chunks:", chunks.length);
       resolve(Buffer.concat(chunks));
     });
   });

@@ -146,8 +146,11 @@ const Post = (props) => {
             </div>
 
             <div className="ContentContainer">
-              {/* {console.log(props.creator_name)} */}
-              <UserTextBlock user_name={userName} content={props.description} />
+              <UserTextBlock
+                user_name={userName}
+                content={props.description}
+                creator_id={props.creator_id}
+              />
 
               {props.is_public && ( // Conditionally render LikeAndComment only if is_public is true
                 <div className="LikeAndComment">

@@ -1,5 +1,34 @@
+.UserTextBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.UserInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between profile pic and username */
+}
+
+.profile-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: white;
+  object-fit: cover;
+}
 
 .UserTextBlock p {
-    margin: 5px 0;
-    color:white;
+  margin: 5px 0;
+  color: white;
+}
+
+.content {
+  margin-top: 8px;
+  margin-left: 32px; /* Aligns with the text after the profile picture */
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }

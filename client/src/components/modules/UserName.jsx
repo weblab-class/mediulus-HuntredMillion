@@ -1,30 +1,25 @@
 import React from "react";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import './UserName.css'
-import IconButton from "@mui/material/IconButton";
-import { useNavigate } from 'react-router-dom';
+import "./UserName.css";
+import { useNavigate } from "react-router-dom";
 
 /**
  * A single comment on a fractal post.
- * 
+ *
  * @param {String} user_name The name of the user who created the comment.
  */
 const UserName = (props) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const goToProfile = (username) => {
-      const formattedUsername = username.replace(/\s+/g, ''); // Format the URL
-      navigate(`/${formattedUsername}`, { state: { username } }); // Pass full username in state
-    };
-  
-    return (
-      <div className="UserName">
-        <p>{props.user_name}</p>
-        <IconButton onClick={() => goToProfile(props.user_name)}>
-          <PersonOutlineIcon  className = "icon"/>
-        </IconButton>
-      </div>
-    );
+  const goToProfile = (username) => {
+    const formattedUsername = username.replace(/\s+/g, "");
+    navigate(`/${formattedUsername}`, { state: { username } });
   };
-  
-  export default UserName;
+
+  return (
+    <div className="UserName" onClick={() => goToProfile(props.user_name)}>
+      <p>{props.user_name}</p>
+    </div>
+  );
+};
+
+export default UserName;

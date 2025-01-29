@@ -1,16 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Monoton&display=swap");
 
 .UserName p {
-    padding-right:10px;
-    color:white;
+  padding-right: 10px;
+  color: white;
 }
 
 .UserName {
-    display: flex;
-    font-family: 'Monoton', monospace;
-    align-items: center;
+  display: flex;
+  font-family: "Monoton", monospace;
+  align-items: center;
 }
 
-.icon {
-    color: white;
+.profile-link {
+  text-decoration: none;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: white;
+  object-fit: cover;
+}
+
+.content {
+  font-family: "Raleway", sans-serif;
+  font-weight: 400;
 }
