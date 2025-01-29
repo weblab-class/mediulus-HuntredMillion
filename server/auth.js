@@ -65,9 +65,36 @@ function logout(req, res) {
 }
 
 function populateCurrentUser(req, res, next) {
-  // simply populate "req.user" for convenience
-  req.user = req.session.user;
-  next();
+  // If there's no user session, continue as normal
+  if (!req.session.user) {
+    next();
+    return;
+  }
+
+  // Validate the user ID before querying
+  if (!req.session.user._id) {
+    console.log("Invalid user session detected");
+    req.session.destroy();
+    next();
+    return;
+  }
+
+  User.findById(req.session.user._id)
+    .then((user) => {
+      if (!user) {
+        // If user doesn't exist anymore, clear the session
+        req.session.destroy();
+        next();
+        return;
+      }
+
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(`Failed to populate user: ${err}`);
+      next();
+    });
 }
 
 function ensureLoggedIn(req, res, next) {

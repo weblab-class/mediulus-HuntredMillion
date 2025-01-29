@@ -46,9 +46,14 @@ router.get("/whoami", (req, res) => {
 });
 
 router.post("/initsocket", (req, res) => {
-  // do nothing if user not logged in
-  if (req.user)
+  // Add validation for user
+  if (!req.user || !req.user._id) {
+    return res.status(400).send({ error: "No valid user found" });
+  }
+
+  if (req.user) {
     socketManager.addUser(req.user, socketManager.getSocketFromSocketID(req.body.socketid));
+  }
   res.send({});
 });
 
