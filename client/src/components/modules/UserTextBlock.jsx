@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./UserName.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Tooltip from "@mui/material/Tooltip";
@@ -15,6 +15,12 @@ import "./UserTextBlock.css";
  */
 const UserTextBlock = (props) => {
   const [profilePicture, setProfilePicture] = useState(null);
+  const navigate = useNavigate();
+
+  const goToProfile = (username) => {
+    const formattedUsername = username.replace(/\s+/g, "");
+    navigate(`/${formattedUsername}`, { state: { username } });
+  };
 
   useEffect(() => {
     if (props.creator_id) {
@@ -38,13 +44,17 @@ const UserTextBlock = (props) => {
     <div className="UserTextBlock">
       <div className="UserInfo">
         <Tooltip title="View Account">
-          <Link to={`/profile/${props.creator_id}`} className="profile-link">
+          <div
+            onClick={() => goToProfile(props.user_name)}
+            className="profile-link"
+            style={{ cursor: "pointer" }}
+          >
             {profilePicture ? (
               <img src={profilePicture} alt={props.user_name} className="profile-icon" />
             ) : (
               <AccountCircleIcon className="profile-icon" />
             )}
-          </Link>
+          </div>
         </Tooltip>
         <UserName user_name={props.user_name} />
       </div>

@@ -4,7 +4,9 @@ import { get, post } from "../../utilities";
 import Post from "../modules/Post.jsx";
 import { UserContext } from "../App.jsx";
 import { useLocation } from "react-router-dom";
-import './UserAccount.css'
+import "./UserAccount.css";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
 const UserAccount = (props) => {
   const { state } = useLocation(); // State passed from navigate
   const user_name = state.username;
@@ -14,6 +16,7 @@ const UserAccount = (props) => {
   const [currentUserName, setCurrentUserName] = useState("");
   const [description, setDescription] = useState("");
   const [following, setFollowing] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   // Fetch current logged-in user's username
   useEffect(() => {
@@ -79,6 +82,25 @@ const UserAccount = (props) => {
     }
   }, [userId, user_name]);
 
+  // Fetch profile picture
+  useEffect(() => {
+    if (profileId) {
+      fetch(`/api/user/${profileId}/profile-picture`)
+        .then((response) => {
+          if (response.ok) {
+            return response.blob();
+          }
+          throw new Error("Profile picture not found");
+        })
+        .then((blob) => {
+          setProfilePicture(URL.createObjectURL(blob));
+        })
+        .catch(() => {
+          setProfilePicture(null);
+        });
+    }
+  }, [profileId]);
+
   // Toggle follow/unfollow
   const toggleFollow = () => {
     const newFollow = !following;
@@ -94,21 +116,11 @@ const UserAccount = (props) => {
     let postsOdd = postsList.filter((_, index) => index % 2 !== 0);
 
     let postsListEven = postsEven.map((postObj) => (
-      <Post
-        key={`Card_${postObj._id}`}
-        {...postObj}
-        userId={userId}
-        userName={currentUserName}
-      />
+      <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={currentUserName} />
     ));
 
     let postsListOdd = postsOdd.map((postObj) => (
-      <Post
-        key={`Card_${postObj._id}`}
-        {...postObj}
-        userId={userId}
-        userName={currentUserName}
-      />
+      <Post key={`Card_${postObj._id}`} {...postObj} userId={userId} userName={currentUserName} />
     ));
 
     return [postsListEven, postsListOdd];
@@ -122,11 +134,21 @@ const UserAccount = (props) => {
         <div className="TopSection">
           <div className="PictureContainer">
             <div className="ProfilePic">
-              <img src="../imgs/osu.jpeg" alt="user profile pic" />
+              {profilePicture ? (
+                <img src={profilePicture} alt="user profile pic" />
+              ) : (
+                <AccountCircleIcon
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    color: "white",
+                  }}
+                />
+              )}
             </div>
             <div className="UserNameAndEdit">
               <p>{user_name}</p>
-              <button className = 'FollowButton' onClick={toggleFollow}>
+              <button className="FollowButton" onClick={toggleFollow}>
                 {following ? "Following" : "Follow"}
               </button>
             </div>
@@ -138,7 +160,7 @@ const UserAccount = (props) => {
       </div>
       <div className="postContainer">
         <div className="postSide">{DisplayList[0]}</div>
-        <div className = 'postSide'>{DisplayList[1]}</div>
+        <div className="postSide">{DisplayList[1]}</div>
       </div>
     </div>
   );
