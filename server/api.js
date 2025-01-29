@@ -173,6 +173,11 @@ router.get("/comment", async (req, res) => {
 
 router.get("/UserName", async (req, res) => {
   try {
+    // Add validation for user_id
+    if (!req.query.user_id) {
+      return res.status(400).send({ error: "user_id is required" });
+    }
+
     const user = await User.findById(req.query.user_id);
     if (!user) {
       return res.status(404).send({ error: "User not found" });
